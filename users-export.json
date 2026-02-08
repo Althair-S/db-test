@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "6987fbe3cbc1114d972bb607",
+    "email": "admin@example.com",
+    "password": "$2b$10$YPJYLv7Er1yVDOoyYpu.Re3qzJ/K8uzfjUt088BvLOcLa4P7/nIWG",
+    "name": "Admin User",
+    "role": "admin",
+    "createdAt": "2026-02-08T02:58:43.955Z",
+    "updatedAt": "2026-02-08T02:58:43.955Z"
+  },
+  {
+    "_id": "6987fbe4cbc1114d972bb608",
+    "email": "finance@example.com",
+    "password": "$2b$10$e4shOTUAOEJHRyvvkjpJXOSxGV4Hss5MQlB6X3p3ZkspxsK19tiVy",
+    "name": "Finance User",
+    "role": "finance",
+    "createdAt": "2026-02-08T02:58:44.035Z",
+    "updatedAt": "2026-02-08T02:58:44.035Z"
+  },
+  {
+    "_id": "6987fbe4cbc1114d972bb609",
+    "email": "user@example.com",
+    "password": "$2b$10$oOU5GcmWSWKWPc3H2/sLa.v0p0xSrPZmCcawYIs/2lzzk71ktGZRS",
+    "name": "Regular User",
+    "role": "user",
+    "createdAt": "2026-02-08T02:58:44.107Z",
+    "updatedAt": "2026-02-08T02:58:44.107Z"
+  }
+]
