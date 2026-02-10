@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
+import Link from "next/link";
 
 interface User {
   _id: string;
   email: string;
   name: string;
   role: "admin" | "finance" | "user";
+  programAccess: string[];
   createdAt: string;
 }
 
@@ -182,6 +184,9 @@ export default function UsersPage() {
                 Role
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Program Access
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -208,6 +213,13 @@ export default function UsersPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {user.role === "admin" ? (
+                    <span className="text-gray-400 italic">All programs</span>
+                  ) : (
+                    <span>{user.programAccess?.length || 0} program(s)</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(user.createdAt).toLocaleDateString("id-ID")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
@@ -217,6 +229,14 @@ export default function UsersPage() {
                   >
                     Edit
                   </button>
+                  {user.role !== "admin" && (
+                    <Link
+                      href={`/dashboard/users/${user._id}/programs`}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      Kelola Program
+                    </Link>
+                  )}
                   <button
                     onClick={() => handleDelete(user._id)}
                     className="text-red-600 hover:text-red-900"

@@ -6,6 +6,8 @@ import Link from "next/link";
 
 interface PurchaseRequest {
   _id: string;
+  programName: string;
+  programCode: string;
   department: string;
   budgeted: boolean;
   costingTo: string;
@@ -169,6 +171,9 @@ export default function PurchaseRequestsPage() {
                   PR Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Program
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Department
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -190,6 +195,12 @@ export default function PurchaseRequestsPage() {
                 <tr key={pr._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {pr.prNumber}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                      {pr.programCode}
+                    </span>
+                    <span className="ml-2">{pr.programName}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {pr.department}

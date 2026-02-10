@@ -6,6 +6,7 @@ export interface IUser {
   password: string;
   name: string;
   role: "admin" | "finance" | "user";
+  programAccess: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +35,11 @@ const UserSchema = new Schema<IUser>(
       enum: ["admin", "finance", "user"],
       default: "user",
       required: true,
+    },
+    programAccess: {
+      type: [Schema.Types.ObjectId],
+      ref: "Program",
+      default: [],
     },
   },
   {

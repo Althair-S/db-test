@@ -13,12 +13,24 @@ interface PRItem {
   totalPrice: number;
 }
 
+interface PRComment {
+  commentedBy: string;
+  commentedByName: string;
+  commentedByRole: string;
+  comment: string;
+  createdAt: string;
+}
+
 interface PurchaseRequest {
   _id: string;
+  activityName: string;
   department: string;
   budgeted: boolean;
   costingTo: string;
   prNumber: string;
+  program: string;
+  programName: string;
+  programCode: string;
   items: PRItem[];
   status: "pending" | "approved" | "rejected";
   createdBy: string;
@@ -28,6 +40,8 @@ interface PurchaseRequest {
   approvedByName?: string;
   approvedAt?: string;
   rejectionReason?: string;
+  comments: PRComment[];
+  revisionRequested: boolean;
 }
 
 export default function PurchaseRequestDetailPage() {
@@ -41,6 +55,10 @@ export default function PurchaseRequestDetailPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // Comment state
+  const [newComment, setNewComment] = useState("");
+  const [commentLoading, setCommentLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -104,7 +122,11 @@ export default function PurchaseRequestDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Apakah Anda yakin ingin menghapus PR ini?")) return;
+    if (!confirm("Are you sure you want to delete this purchase request?")) {
+      return;
+    }
+
+    setActionLoading(true);
 
     try {
       const response = await fetch(`/api/purchase-requests/${id}`, {
@@ -113,10 +135,49 @@ export default function PurchaseRequestDetailPage() {
 
       if (response.ok) {
         router.push("/dashboard/purchase-requests");
+      } else {
+        alert("Failed to delete purchase request");
       }
     } catch (error) {
       console.error("Error deleting PR:", error);
+      alert("An error occurred");
+    } finally {
+      setActionLoading(false);
     }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) {
+      alert("Please enter a comment");
+      return;
+    }
+
+    setCommentLoading(true);
+
+    try {
+      const response = await fetch(`/api/purchase-requests/${id}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment: newComment }),
+      });
+
+      if (response.ok) {
+        setNewComment("");
+        fetchPR(); // Refresh to show new comment
+      } else {
+        const data = await response.json();
+        alert(data.error || "Failed to add comment");
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      alert("An error occurred");
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   const formatRupiah = (value: number) => {
@@ -169,7 +230,76 @@ export default function PurchaseRequestDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Print-only template - Professional Form Style */}
+      <div className="hidden print:block font-sans text-black">
+        {/* Header Section */}
+        <div className="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">
+              Purchase Request
+            </h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Official Document • {pr.programName}
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-mono font-bold text-gray-800">
+              {pr.prNumber}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Date:{" "}
+              {new Date(pr.createdAt).toLocaleDateString("id-ID", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+
+        {/* Info Grid */}
+        <div className="grid grid-cols-2 gap-x-12 gap-y-4 mb-8 text-sm">
+          <div className="space-y-3">
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">
+                Activity Name
+              </span>
+              <span className="flex-1 font-medium">{pr.activityName}</span>
+            </div>
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">
+                Department
+              </span>
+              <span className="flex-1 font-medium">{pr.department}</span>
+            </div>
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">
+                Created By
+              </span>
+              <span className="flex-1 font-medium">{pr.createdByName}</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">Program</span>
+              <span className="flex-1 font-medium">{pr.program}</span>
+            </div>
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">Status</span>
+              <span className="flex-1 font-medium uppercase">{pr.status}</span>
+            </div>
+            <div className="flex border-b border-gray-200 py-1">
+              <span className="font-semibold w-32 text-gray-600">
+                Costing To
+              </span>
+              <span className="flex-1 font-medium">{pr.costingTo}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold text-gray-800">
           Purchase Request Detail
         </h1>
@@ -323,8 +453,120 @@ export default function PurchaseRequestDetailPage() {
         </div>
       )}
 
+      {/* Comments Section */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          Comments & Discussion
+        </h3>
+
+        {/* Display existing comments */}
+        {pr.comments && pr.comments.length > 0 ? (
+          <div className="space-y-3 mb-6">
+            {pr.comments.map((comment, idx) => (
+              <div
+                key={idx}
+                className={`border rounded-lg p-4 ${
+                  comment.commentedByRole === "finance"
+                    ? "bg-blue-50 border-blue-200"
+                    : "bg-gray-50 border-gray-200"
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <span className="font-semibold text-gray-900">
+                      {comment.commentedByName}
+                    </span>
+                    <span
+                      className={`text-xs px-2 py-1 rounded ml-2 ${
+                        comment.commentedByRole === "finance"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      {comment.commentedByRole}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    {new Date(comment.createdAt).toLocaleDateString("id-ID", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <p className="text-gray-700 whitespace-pre-wrap">
+                  {comment.comment}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 italic mb-6">
+            No comments yet. Start a discussion here.
+          </p>
+        )}
+
+        {/* Add comment form (finance and PR owner can comment) */}
+        {(session?.user?.role === "finance" ||
+          (session?.user?.role === "user" &&
+            pr.createdBy === session?.user?.id)) && (
+          <div className="border-t border-gray-200 pt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {session?.user?.role === "finance"
+                ? "Add Review Comment"
+                : "Reply to Finance"}
+            </label>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={
+                session?.user?.role === "finance"
+                  ? "Provide feedback or request revisions..."
+                  : "Reply to finance comments or provide updates..."
+              }
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+            />
+            <div className="mt-3 flex justify-end">
+              <button
+                onClick={handleAddComment}
+                disabled={commentLoading || !newComment.trim()}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {commentLoading ? "Submitting..." : "Submit Comment"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Actions */}
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-end space-x-4 print:hidden">
+        {/* Print button for approved PRs */}
+        {pr.status === "approved" && (
+          <button
+            onClick={handlePrint}
+            className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+            Print to PDF
+          </button>
+        )}
+
         {canDelete && (
           <button
             onClick={handleDelete}
@@ -393,6 +635,127 @@ export default function PurchaseRequestDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Print-specific styles */}
+      <style jsx global>{`
+        @media print {
+          /* Hide navigation, modals, and interactive elements */
+          nav,
+          aside,
+          button:not(.print-keep),
+          .print-hidden,
+          [class*="modal"] {
+            display: none !important;
+          }
+
+          /* Page setup */
+          @page {
+            margin: 1.5cm;
+            size: A4 portrait;
+          }
+
+          body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+
+          /* Prevent page breaks inside important elements */
+          table,
+          .bg-white {
+            page-break-inside: avoid;
+          }
+
+          /* Preserve background colors for print */
+          .bg-blue-50,
+          .bg-gray-50,
+          .bg-green-100,
+          .bg-red-100 {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          /* Optimize spacing for print */
+          .space-y-6 > * + * {
+            margin-top: 1rem !important;
+          }
+
+          /* Make text more readable */
+          body {
+            font-size: 11pt;
+            line-height: 1.4;
+          }
+
+          h1 {
+            font-size: 18pt;
+          }
+
+          h2 {
+            font-size: 14pt;
+          }
+
+          h3 {
+            font-size: 12pt;
+          }
+
+          /* Ensure tables fit on page */
+          table {
+            width: 100%;
+            font-size: 10pt;
+          }
+
+          /* Remove shadows for cleaner print */
+          .shadow,
+          .shadow-lg {
+            box-shadow: none !important;
+            border: 1px solid #e5e7eb;
+          }
+        }
+      `}</style>
+      {/* Comments Section - Print View (Simplified) */}
+      <div className="hidden print:block mt-8">
+        <h3 className="text-lg font-bold border-b border-black mb-4">
+          Comments
+        </h3>
+        {pr.comments && pr.comments.length > 0 ? (
+          <div className="space-y-2">
+            {pr.comments.map((comment, idx) => (
+              <div key={idx} className="text-sm">
+                <span className="font-semibold">
+                  {comment.commentedByName}:{" "}
+                </span>
+                <span>{comment.comment}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">No comments.</p>
+        )}
+      </div>
+
+      {/* Signature Section - Print Only */}
+      <div className="hidden print:flex mt-12 justify-between items-end break-inside-avoid">
+        <div className="text-center">
+          <p className="mb-16 font-semibold">Requested By,</p>
+          <div className="border-b border-black w-48 mb-2"></div>
+          <p className="font-bold">{pr.createdByName}</p>
+          <p className="text-xs text-gray-600">
+            Date: {new Date(pr.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+
+        <div className="text-center">
+          <p className="mb-16 font-semibold">Approved By,</p>
+          <div className="border-b border-black w-48 mb-2"></div>
+          <p className="font-bold">{pr.approvedByName || "________________"}</p>
+          <p className="text-xs text-gray-600">
+            Date:{" "}
+            {pr.approvedAt
+              ? new Date(pr.approvedAt).toLocaleDateString()
+              : "________________"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

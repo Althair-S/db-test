@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import PurchaseRequest from "@/models/PurchaseRequest";
+import Program from "@/models/Program";
+import { generatePRNumber } from "@/lib/prNumberGenerator";
+import {
+  validateProgramAccess,
+  getUserProgramAccess,
+} from "@/lib/programAccess";
 
-// GET all purchase requests (filtered by role)
+// GET all purchase requests (filtered by role and program access)
 export async function GET() {
   try {
     const session = await auth();
@@ -16,13 +22,37 @@ export async function GET() {
 
     let purchaseRequests;
 
-    // Admin and Finance can see all PRs
-    if (session.user.role === "admin" || session.user.role === "finance") {
+    if (session.user.role === "admin") {
+      // Admin can see all PRs
       purchaseRequests = await PurchaseRequest.find({}).sort({ createdAt: -1 });
+    } else if (session.user.role === "finance") {
+      // Finance can see PRs from programs they have access to
+      const programIds = await getUserProgramAccess(
+        session.user.id,
+        session.user.role,
+      );
+
+      if (programIds.length === 0) {
+        return NextResponse.json([]);
+      }
+
+      purchaseRequests = await PurchaseRequest.find({
+        program: { $in: programIds },
+      }).sort({ createdAt: -1 });
     } else {
-      // Users can only see their own PRs
+      // Users can only see their own PRs from programs they have access to
+      const programIds = await getUserProgramAccess(
+        session.user.id,
+        session.user.role,
+      );
+
+      if (programIds.length === 0) {
+        return NextResponse.json([]);
+      }
+
       purchaseRequests = await PurchaseRequest.find({
         createdBy: session.user.id,
+        program: { $in: programIds },
       }).sort({ createdAt: -1 });
     }
 
@@ -54,14 +84,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { department, budgeted, costingTo, prNumber, items } = body;
+    const { department, budgeted, costingTo, programId, activityName, items } =
+      body;
 
     // Validation
     if (
       !department ||
       budgeted === undefined ||
       !costingTo ||
-      !prNumber ||
+      !programId ||
+      !activityName ||
       !items ||
       items.length === 0
     ) {
@@ -76,17 +108,43 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Check if PR number already exists
-    const existingPR = await PurchaseRequest.findOne({ prNumber });
-    if (existingPR) {
+    // Validate user has access to this program
+    const hasAccess = await validateProgramAccess(
+      session.user.id,
+      programId,
+      session.user.role,
+    );
+
+    if (!hasAccess) {
       return NextResponse.json(
-        { error: "PR Number already exists" },
+        { error: "You do not have access to this program" },
+        { status: 403 },
+      );
+    }
+
+    // Get program details
+    const program = await Program.findById(programId);
+
+    if (!program) {
+      return NextResponse.json({ error: "Program not found" }, { status: 404 });
+    }
+
+    if (!program.isActive) {
+      return NextResponse.json(
+        { error: "Program is not active" },
         { status: 400 },
       );
     }
 
+    // Generate PR number automatically
+    const prNumber = await generatePRNumber(programId);
+
     // Create purchase request
     const purchaseRequest = await PurchaseRequest.create({
+      program: programId,
+      programName: program.name,
+      programCode: program.code,
+      activityName,
       department,
       budgeted,
       costingTo,

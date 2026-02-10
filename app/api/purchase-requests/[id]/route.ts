@@ -34,6 +34,11 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    // Ensure comments array exists (for old PRs created before comments field)
+    if (!pr.comments) {
+      pr.comments = [];
+    }
+
     return NextResponse.json(pr);
   } catch (error) {
     console.error("Error fetching purchase request:", error);

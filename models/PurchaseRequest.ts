@@ -8,9 +8,23 @@ export interface IPRItem {
   totalPrice: number;
 }
 
+export interface IPRComment {
+  commentedBy: mongoose.Types.ObjectId;
+  commentedByName: string;
+  commentedByRole: string;
+  comment: string;
+  createdAt: Date;
+}
+
 export interface IPurchaseRequest {
   _id: string;
+  // Program
+  program: mongoose.Types.ObjectId;
+  programName: string;
+  programCode: string;
+
   // Section 1
+  activityName: string;
   department: string;
   budgeted: boolean;
   costingTo: string;
@@ -27,6 +41,11 @@ export interface IPurchaseRequest {
   approvedByName?: string;
   approvedAt?: Date;
   rejectionReason?: string;
+
+  // Comments & Revision
+  comments: IPRComment[];
+  revisionRequested: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,8 +81,57 @@ const PRItemSchema = new Schema<IPRItem>(
   { _id: false },
 );
 
+const PRCommentSchema = new Schema<IPRComment>(
+  {
+    commentedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    commentedByName: {
+      type: String,
+      required: true,
+    },
+    commentedByRole: {
+      type: String,
+      required: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false },
+);
+
 const PurchaseRequestSchema = new Schema<IPurchaseRequest>(
   {
+    program: {
+      type: Schema.Types.ObjectId,
+      ref: "Program",
+      required: [true, "Program is required"],
+    },
+    programName: {
+      type: String,
+      required: [true, "Program name is required"],
+      trim: true,
+    },
+    programCode: {
+      type: String,
+      required: [true, "Program code is required"],
+      uppercase: true,
+      trim: true,
+    },
+    activityName: {
+      type: String,
+      required: [true, "Activity name is required"],
+      trim: true,
+    },
     department: {
       type: String,
       required: [true, "Department is required"],
@@ -124,6 +192,14 @@ const PurchaseRequestSchema = new Schema<IPurchaseRequest>(
       type: String,
       trim: true,
     },
+    comments: {
+      type: [PRCommentSchema],
+      default: [],
+    },
+    revisionRequested: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -133,7 +209,9 @@ const PurchaseRequestSchema = new Schema<IPurchaseRequest>(
 // Index for faster queries
 PurchaseRequestSchema.index({ status: 1, createdAt: -1 });
 PurchaseRequestSchema.index({ createdBy: 1, createdAt: -1 });
-PurchaseRequestSchema.index({ prNumber: 1 });
+// prNumber already has unique: true, no need for separate index
+PurchaseRequestSchema.index({ program: 1, createdAt: -1 });
+PurchaseRequestSchema.index({ program: 1, status: 1 });
 
 const PurchaseRequest: Model<IPurchaseRequest> =
   mongoose.models.PurchaseRequest ||

@@ -8,6 +8,7 @@ import {
   DocumentTextIcon,
   ClipboardDocumentCheckIcon,
   UsersIcon,
+  FolderIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
@@ -42,6 +43,12 @@ export default function Sidebar() {
       name: "All Requests",
       href: "/dashboard/purchase-requests",
       icon: DocumentTextIcon,
+      roles: ["admin"],
+    },
+    {
+      name: "Programs",
+      href: "/dashboard/programs",
+      icon: FolderIcon,
       roles: ["admin"],
     },
     {

@@ -13,6 +13,7 @@ interface PRItem {
 
 interface PurchaseRequest {
   _id: string;
+  activityName: string;
   department: string;
   budgeted: boolean;
   costingTo: string;
@@ -30,6 +31,7 @@ export default function EditPurchaseRequestPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  const [activityName, setActivityName] = useState("");
   const [department, setDepartment] = useState("");
   const [budgeted, setBudgeted] = useState(false);
   const [costingTo, setCostingTo] = useState("");
@@ -57,6 +59,7 @@ export default function EditPurchaseRequestPage() {
           return;
         }
 
+        setActivityName(data.activityName);
         setDepartment(data.department);
         setBudgeted(data.budgeted);
         setCostingTo(data.costingTo);
@@ -123,6 +126,7 @@ export default function EditPurchaseRequestPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          activityName,
           department,
           budgeted,
           costingTo,
@@ -236,103 +240,122 @@ export default function EditPurchaseRequestPage() {
             <button
               type="button"
               onClick={addItem}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-medium"
             >
               + Tambah Item
             </button>
           </div>
 
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-lg p-4 space-y-3"
-            >
-              <div className="flex justify-between items-center">
-                <h3 className="font-medium text-gray-700">Item {index + 1}</h3>
-                {items.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeItem(index)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Hapus
-                  </button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Item Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={item.item}
-                    onChange={(e) => updateItem(index, "item", e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Quantity <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      updateItem(index, "quantity", Number(e.target.value))
-                    }
-                    required
-                    min="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Unit <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={item.unit}
-                    onChange={(e) => updateItem(index, "unit", e.target.value)}
-                    required
-                    placeholder="pcs, kg, box, dll"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price (IDR) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={item.price}
-                    onChange={(e) =>
-                      updateItem(index, "price", Number(e.target.value))
-                    }
-                    required
-                    min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+                    Name Item
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-24">
+                    Qty
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-32">
+                    Unit
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-40">
+                    Price
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-40">
                     Total Price
-                  </label>
-                  <div className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700 font-semibold">
-                    {formatRupiah(item.totalPrice)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+                  </th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b border-gray-200 w-32">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {items.map((item, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <input
+                        type="text"
+                        value={item.item}
+                        onChange={(e) =>
+                          updateItem(index, "item", e.target.value)
+                        }
+                        required
+                        placeholder="Nama item"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateItem(index, "quantity", Number(e.target.value))
+                        }
+                        required
+                        min="1"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <input
+                        type="text"
+                        value={item.unit}
+                        onChange={(e) =>
+                          updateItem(index, "unit", e.target.value)
+                        }
+                        required
+                        placeholder="pcs, kg"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <input
+                        type="number"
+                        value={item.price}
+                        onChange={(e) =>
+                          updateItem(index, "price", Number(e.target.value))
+                        }
+                        required
+                        min="0"
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700 font-semibold text-sm">
+                        {formatRupiah(item.totalPrice)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 border-b border-gray-200">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={addItem}
+                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+                          title="Tambah item baru"
+                        >
+                          Tambah
+                        </button>
+                        {items.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition"
+                            title="Hapus item ini"
+                          >
+                            Hapus
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mt-4">
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold text-gray-800">
                 Grand Total:
