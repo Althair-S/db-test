@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import PrintTemplate from "./PrintTemplate";
 
 interface PRItem {
   item: string;
@@ -230,74 +231,12 @@ export default function PurchaseRequestDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Print-only template - Professional Form Style */}
-      <div className="hidden print:block font-sans text-black">
-        {/* Header Section */}
-        <div className="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">
-              Purchase Request
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Official Document • {pr.programName}
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-mono font-bold text-gray-800">
-              {pr.prNumber}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Date:{" "}
-              {new Date(pr.createdAt).toLocaleDateString("id-ID", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          </div>
-        </div>
-
-        {/* Info Grid */}
-        <div className="grid grid-cols-2 gap-x-12 gap-y-4 mb-8 text-sm">
-          <div className="space-y-3">
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">
-                Activity Name
-              </span>
-              <span className="flex-1 font-medium">{pr.activityName}</span>
-            </div>
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">
-                Department
-              </span>
-              <span className="flex-1 font-medium">{pr.department}</span>
-            </div>
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">
-                Created By
-              </span>
-              <span className="flex-1 font-medium">{pr.createdByName}</span>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">Program</span>
-              <span className="flex-1 font-medium">{pr.program}</span>
-            </div>
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">Status</span>
-              <span className="flex-1 font-medium uppercase">{pr.status}</span>
-            </div>
-            <div className="flex border-b border-gray-200 py-1">
-              <span className="font-semibold w-32 text-gray-600">
-                Costing To
-              </span>
-              <span className="flex-1 font-medium">{pr.costingTo}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Print Template - Separate Component */}
+      <PrintTemplate
+        pr={pr}
+        formatRupiah={formatRupiah}
+        getTotalAmount={getTotalAmount}
+      />
 
       <div className="flex justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold text-gray-800">
@@ -312,7 +251,7 @@ export default function PurchaseRequestDetailPage() {
       </div>
 
       {/* Status Badge */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-6 print:hidden">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
@@ -328,8 +267,8 @@ export default function PurchaseRequestDetailPage() {
         </div>
       </div>
 
-      {/* Section 1 */}
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* Section 1 - Hidden in Print */}
+      <div className="bg-white rounded-lg shadow p-6 print:hidden">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
           Informasi Umum
         </h3>
@@ -358,8 +297,7 @@ export default function PurchaseRequestDetailPage() {
       </div>
 
       {/* Items */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Items</h3>
+      <div className="bg-white rounded-lg shadow p-6 print:hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -419,9 +357,9 @@ export default function PurchaseRequestDetailPage() {
         </div>
       </div>
 
-      {/* Approval Info */}
+      {/* Approval Info - Hidden in Print */}
       {pr.status !== "pending" && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 print:hidden">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             {pr.status === "approved"
               ? "Approval Information"
@@ -453,8 +391,8 @@ export default function PurchaseRequestDetailPage() {
         </div>
       )}
 
-      {/* Comments Section */}
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* Comments Section - Hidden in Print */}
+      <div className="bg-white rounded-lg shadow p-6 print:hidden">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
           Comments & Discussion
         </h3>
@@ -648,6 +586,17 @@ export default function PurchaseRequestDetailPage() {
             display: none !important;
           }
 
+          /* Hide comments section and approval info in print */
+          div.bg-white.rounded-lg.shadow.p-6:has(h3:contains("Comments")),
+          div.bg-white.rounded-lg.shadow.p-6:has(
+              h3:contains("Approval Information")
+            ),
+          div.bg-white.rounded-lg.shadow.p-6:has(
+              h3:contains("Rejection Information")
+            ) {
+            display: none !important;
+          }
+
           /* Page setup */
           @page {
             margin: 1.5cm;
@@ -675,9 +624,23 @@ export default function PurchaseRequestDetailPage() {
             print-color-adjust: exact;
           }
 
-          /* Optimize spacing for print */
+          /* Optimize spacing for print - more compact */
           .space-y-6 > * + * {
-            margin-top: 1rem !important;
+            margin-top: 0.5rem !important;
+          }
+
+          /* Reduce padding on cards */
+          .p-6 {
+            padding: 0.75rem !important;
+          }
+
+          /* Compact header margins */
+          .mb-6 {
+            margin-bottom: 0.5rem !important;
+          }
+
+          .mb-4 {
+            margin-bottom: 0.25rem !important;
           }
 
           /* Make text more readable */
@@ -712,50 +675,6 @@ export default function PurchaseRequestDetailPage() {
           }
         }
       `}</style>
-      {/* Comments Section - Print View (Simplified) */}
-      <div className="hidden print:block mt-8">
-        <h3 className="text-lg font-bold border-b border-black mb-4">
-          Comments
-        </h3>
-        {pr.comments && pr.comments.length > 0 ? (
-          <div className="space-y-2">
-            {pr.comments.map((comment, idx) => (
-              <div key={idx} className="text-sm">
-                <span className="font-semibold">
-                  {comment.commentedByName}:{" "}
-                </span>
-                <span>{comment.comment}</span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">No comments.</p>
-        )}
-      </div>
-
-      {/* Signature Section - Print Only */}
-      <div className="hidden print:flex mt-12 justify-between items-end break-inside-avoid">
-        <div className="text-center">
-          <p className="mb-16 font-semibold">Requested By,</p>
-          <div className="border-b border-black w-48 mb-2"></div>
-          <p className="font-bold">{pr.createdByName}</p>
-          <p className="text-xs text-gray-600">
-            Date: {new Date(pr.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-
-        <div className="text-center">
-          <p className="mb-16 font-semibold">Approved By,</p>
-          <div className="border-b border-black w-48 mb-2"></div>
-          <p className="font-bold">{pr.approvedByName || "________________"}</p>
-          <p className="text-xs text-gray-600">
-            Date:{" "}
-            {pr.approvedAt
-              ? new Date(pr.approvedAt).toLocaleDateString()
-              : "________________"}
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
