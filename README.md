@@ -1,12 +1,8 @@
-# 🎉 Purchase Request Management System - SIAP DIGUNAKAN!
-
-## ✅ Status: APLIKASI SUDAH BERJALAN
-
-Server development berjalan di: **http://localhost:3000**
+# 🎉 Purchase Request Management System
 
 ## 🔐 Login Credentials
 
-Tiga user sudah dibuat dan siap digunakan:
+User Login
 
 | Role        | Email               | Password   |
 | ----------- | ------------------- | ---------- |
@@ -55,7 +51,7 @@ Gunakan salah satu credentials di atas untuk login
 5. Edit atau hapus user yang ada
 6. Lihat semua PR di "All Requests"
 
-## 📋 Fitur Lengkap
+## 📋 Fitur
 
 ### ✅ Authentication
 
@@ -103,16 +99,6 @@ Collections:
 - `users` - 3 users sudah dibuat
 - `purchaserequests` - akan terisi saat user membuat PR
 
-## 📁 File Penting
-
-- `.env.local` - Environment variables
-- `auth.ts` - NextAuth configuration
-- `middleware.ts` - Route protection
-- `models/User.ts` - User schema
-- `models/PurchaseRequest.ts` - PR schema
-- `app/api/*` - API routes
-- `app/dashboard/*` - Dashboard pages
-
 ## 🔧 Commands
 
 ```bash
@@ -128,15 +114,6 @@ npm start
 # Create users (sudah dijalankan)
 node create-users.js
 ```
-
-## 🎯 Next Steps
-
-1. **Test semua fitur** dengan 3 user yang berbeda
-2. **Buat beberapa PR** untuk test workflow
-3. **Test approve/reject** sebagai finance
-4. **Test user management** sebagai admin
-
-## ⚠️ Catatan
 
 - Pastikan MongoDB tetap berjalan
 - Jangan stop `npm run dev`
