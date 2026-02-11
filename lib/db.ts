@@ -1,16 +1,19 @@
 import mongoose from "mongoose";
 import { DATABASE_URL } from "./env";
+import dns from "dns";
+
+// Force Google DNS to resolve MongoDB Atlas hostnames
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch {
+  // Ignore error if setServers fails
+}
 
 const connect = async () => {
   try {
-    // Log the connection string (masking the password) for debugging
-    const maskedUrl = DATABASE_URL.replace(/:([^@]+)@/, ":****@");
-    console.log(`Attempting to connect to MongoDB: ${maskedUrl}`);
-
     await mongoose.connect(DATABASE_URL, {
       dbName: "pr",
     });
-    console.log("Database connected!");
     return Promise.resolve("Database connected!");
   } catch (error) {
     console.error("Database connection failed:", error);
