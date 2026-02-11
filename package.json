@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx scripts/check-db-connection.ts && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.4",
     "mongodb": "^7.1.0",
     "mongoose": "^9.1.6",
     "next": "16.1.6",

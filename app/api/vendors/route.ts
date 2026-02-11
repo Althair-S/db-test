@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import connect from "@/lib/db";
 import Vendor from "@/models/Vendor";
 
 // GET all vendors (admin only)
@@ -20,7 +20,7 @@ export async function GET() {
       );
     }
 
-    await dbConnect();
+    await connect();
 
     const vendors = await Vendor.find({}).sort({ name: 1 });
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await dbConnect();
+    await connect();
 
     // Create vendor
     const vendor = await Vendor.create({

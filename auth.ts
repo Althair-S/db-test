@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
-import dbConnect from "./lib/mongodb";
+import connect from "./lib/db";
 import User from "./models/User";
 import bcrypt from "bcryptjs";
 
@@ -46,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Check database users
         try {
-          await dbConnect();
+          await connect();
           const user = await User.findOne({ email: email.toLowerCase() });
 
           if (!user) {

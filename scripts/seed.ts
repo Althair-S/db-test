@@ -1,10 +1,10 @@
-import dbConnect from "../lib/mongodb";
+import connect from "../lib/db";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 
 async function seed() {
   try {
-    await dbConnect();
+    await connect();
     console.log("Connected to MongoDB");
 
     // Clear existing users (optional)

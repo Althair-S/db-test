@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import connect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
@@ -13,7 +13,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await dbConnect();
+    await connect();
     const users = await User.find({})
       .select("-password")
       .sort({ createdAt: -1 });
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    await dbConnect();
+    await connect();
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });

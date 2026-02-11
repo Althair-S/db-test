@@ -1,7 +1,24 @@
 const { MongoClient } = require('mongodb');
 
-// Gunakan URI dari .env.local
-const ATLAS_URI = 'mongodb+srv://althair-s:oG64vdASw4Bw0CkB@cluster0.5nngnt1.mongodb.net/pr';
+const fs = require('fs');
+const path = require('path');
+
+// Read .env.local
+const envPath = path.join(__dirname, '..', '.env.local');
+let ATLAS_URI = '';
+
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const match = envContent.match(/MONGODB_URI=(.+)/);
+  if (match) {
+    ATLAS_URI = match[1].trim();
+  }
+}
+
+if (!ATLAS_URI) {
+  console.error('❌ MONGODB_URI not found in .env.local');
+  process.exit(1);
+}
 
 async function checkAtlasData() {
   console.log('🔍 Checking MongoDB Atlas data...\n');

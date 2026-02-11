@@ -10,7 +10,7 @@
  */
 
 import mongoose from "mongoose";
-import dbConnect from "../lib/mongodb";
+import connect from "../lib/db";
 import Program from "../models/Program";
 import PurchaseRequest from "../models/PurchaseRequest";
 import User from "../models/User";
@@ -19,7 +19,7 @@ async function migrate() {
   console.log("Starting migration...");
 
   try {
-    await dbConnect();
+    await connect();
 
     // Step 1: Create default program
     console.log("\n1. Creating default program...");

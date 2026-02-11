@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import connect from "@/lib/db";
 import { getUserProgramAccess } from "@/lib/programAccess";
 import Program from "@/models/Program";
 
@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await dbConnect();
+    await connect();
 
     // Get programs based on user access
     const programIds = await getUserProgramAccess(

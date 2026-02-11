@@ -6,7 +6,17 @@ const LOCAL_URI = 'mongodb://localhost:27017';
 const LOCAL_DB = 'pr';
 
 // Ganti dengan connection string MongoDB Atlas Anda
-const ATLAS_URI = 'mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority';
+let ATLAS_URI = '';
+// Read .env.local for ATLAS_URI
+const envPath = require('path').join(__dirname, '..', '.env.local');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const match = envContent.match(/MONGODB_URI=(.+)/);
+  if (match) {
+    ATLAS_URI = match[1].trim();
+  }
+}
+
 const ATLAS_DB = 'pr';
 
 async function exportToJSON() {
@@ -43,13 +53,9 @@ async function exportToJSON() {
 async function importToAtlas() {
   console.log('📤 Importing data to MongoDB Atlas...\n');
   
-  if (ATLAS_URI.includes('<username>') || ATLAS_URI.includes('<password>')) {
-    console.error('❌ Error: Please update ATLAS_URI with your actual MongoDB Atlas connection string!');
-    console.log('\nYou can get it from:');
-    console.log('1. Go to MongoDB Atlas dashboard');
-    console.log('2. Click "Connect" on your cluster');
-    console.log('3. Choose "Connect your application"');
-    console.log('4. Copy the connection string');
+  if (!ATLAS_URI || ATLAS_URI.includes('<username>') || ATLAS_URI.includes('<password>')) {
+    console.error('❌ Error: MONGODB_URI not found in .env.local or is invalid!');
+    console.log('\nPlease ensure .env.local has a valid MONGODB_URI');
     return;
   }
   

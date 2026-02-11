@@ -15,11 +15,14 @@ export const authConfig = {
       return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as "admin" | "finance" | "user";
-        session.user.name = token.name as string;
-        session.user.email = token.email as string;
+      if (token) {
+        session.user = {
+          ...session.user,
+          id: token.id as string,
+          role: token.role as "admin" | "finance" | "user",
+          name: token.name as string,
+          email: token.email as string,
+        };
       }
       return session;
     },

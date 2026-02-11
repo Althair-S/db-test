@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import PurchaseRequest from "@/models/PurchaseRequest";
 
 // POST - Add comment to PR (finance only)

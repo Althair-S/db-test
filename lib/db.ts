@@ -1,11 +1,14 @@
+import dns from "dns";
 import mongoose from "mongoose";
+import { DATABASE_URL } from "./env";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local",
-  );
+// Force Google DNS to resolve MongoDB Atlas hostnames
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  console.log("✅ DNS servers set to 8.8.8.8, 1.1.1.1");
+} catch (e) {
+  // Ignore error if setServers fails (e.g. valid IP check)
+  console.log("DNS setting skipped/failed, using system defaults");
 }
 
 interface MongooseCache {
@@ -23,7 +26,7 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-async function dbConnect(): Promise<typeof mongoose> {
+const connect = async () => {
   if (cached.conn) {
     return cached.conn;
   }
@@ -31,9 +34,11 @@ async function dbConnect(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: "pr",
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(DATABASE_URL, opts).then((mongoose) => {
+      console.log("✅ Database connected!");
       return mongoose;
     });
   }
@@ -46,6 +51,6 @@ async function dbConnect(): Promise<typeof mongoose> {
   }
 
   return cached.conn;
-}
+};
 
-export default dbConnect;
+export default connect;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import CashRequest from "@/models/CashRequest";
 
 interface RouteParams {

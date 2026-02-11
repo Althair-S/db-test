@@ -68,9 +68,7 @@ const ProgramSchema = new Schema<IProgram>(
 );
 
 // Indexes for faster queries
-ProgramSchema.index({ code: 1 });
 ProgramSchema.index({ isActive: 1 });
-ProgramSchema.index({ name: 1 });
 
 const Program: Model<IProgram> =
   mongoose.models.Program || mongoose.model<IProgram>("Program", ProgramSchema);

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import Program from "@/models/Program";
 import { getUserProgramAccess } from "@/lib/programAccess";
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import dbConnect from "@/lib/db";
 import PurchaseRequest from "@/models/PurchaseRequest";
 
 // GET single purchase request

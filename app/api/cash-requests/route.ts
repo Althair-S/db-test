@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import dbConnect from "@/lib/mongodb";
+import connect from "@/lib/db";
 import CashRequest from "@/models/CashRequest";
 import Vendor from "@/models/Vendor";
 import Program from "@/models/Program";
@@ -19,7 +19,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await dbConnect();
+    await connect();
 
     let cashRequests;
 
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await dbConnect();
+    await connect();
 
     // Validate user has access to this program
     const hasAccess = await validateProgramAccess(
