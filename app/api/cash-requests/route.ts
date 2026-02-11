@@ -8,7 +8,6 @@ import {
   validateProgramAccess,
   getUserProgramAccess,
 } from "@/lib/programAccess";
-import { ICRItem } from "@/types/cash-request";
 
 // GET all cash requests (filtered by role and program access)
 export async function GET() {
@@ -160,19 +159,25 @@ export async function POST(request: NextRequest) {
 
     // Calculate totals server-side
     let calculatedTotal = 0;
-    const processedItems = items.map((item: any) => {
-      const quantity = Number(item.quantity) || 0;
-      const price = Number(item.price) || 0;
-      const total = quantity * price;
-      calculatedTotal += total;
+    const processedItems = items.map(
+      (item: {
+        description: string;
+        quantity: number | string;
+        price: number | string;
+      }) => {
+        const quantity = Number(item.quantity) || 0;
+        const price = Number(item.price) || 0;
+        const total = quantity * price;
+        calculatedTotal += total;
 
-      return {
-        description: item.description,
-        quantity,
-        price,
-        total,
-      };
-    });
+        return {
+          description: item.description,
+          quantity,
+          price,
+          total,
+        };
+      },
+    );
 
     // Calculate Tax
     let taxAmount = 0;
@@ -203,8 +208,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(cashRequest, { status: 201 });
   } catch (error) {
     console.error("Error creating cash request:", error);
-    // @ts-ignore
-    const errorMessage = error.message || "Unknown error";
+    const errorMessage = (error as Error).message || "Unknown error";
     return NextResponse.json(
       { error: `Internal server error: ${errorMessage}` },
       { status: 500 },

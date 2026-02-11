@@ -73,7 +73,12 @@ export default function UsersPage() {
       const url = editingUser ? `/api/users/${editingUser._id}` : "/api/users";
       const method = editingUser ? "PUT" : "POST";
 
-      const body: any = { email, name, role };
+      const body: {
+        email: string;
+        name: string;
+        role: string;
+        password?: string;
+      } = { email, name, role };
       if (password || !editingUser) {
         body.password = password;
       }
@@ -91,7 +96,7 @@ export default function UsersPage() {
         const data = await response.json();
         setFormError(data.error || "Failed to save user");
       }
-    } catch (error) {
+    } catch {
       setFormError("An error occurred. Please try again.");
     } finally {
       setFormLoading(false);

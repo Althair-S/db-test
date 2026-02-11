@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IVendor } from "@/types/cash-request";
-import { useSession } from "next-auth/react";
+
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 interface Program {
@@ -20,7 +20,7 @@ interface RequestItem {
 
 export default function NewCashRequestPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const [vendors, setVendors] = useState<IVendor[]>([]);
   const [selectedVendor, setSelectedVendor] = useState<string>("");
   const [useManualInput, setUseManualInput] = useState(false);
@@ -112,7 +112,11 @@ export default function NewCashRequestPage() {
     setItems(newItems);
   };
 
-  const updateItem = (index: number, field: keyof RequestItem, value: any) => {
+  const updateItem = (
+    index: number,
+    field: keyof RequestItem,
+    value: string | number,
+  ) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     setItems(newItems);
@@ -336,7 +340,7 @@ export default function NewCashRequestPage() {
                   key={index}
                   className="flex gap-3 items-start bg-gray-50 p-3 rounded-lg border border-gray-200"
                 >
-                  <div className="flex-grow">
+                  <div className="grow">
                     <input
                       type="text"
                       placeholder="Item Description"

@@ -1,6 +1,5 @@
-/* eslint-disable */
-import connect from "./lib/db";
-import User from "./models/User";
+import connect from "../lib/db";
+import User from "../models/User";
 import bcrypt from "bcryptjs";
 
 const DEFAULT_USERS = [
