@@ -1,25 +1,8 @@
 import React from "react";
-import { ICRItem } from "@/types/cash-request";
+import { ICashRequest } from "@/types/cash-request";
 
 interface PrintTemplateProps {
-  cr: {
-    _id: string;
-    programName: string;
-    programCode: string;
-    createdByName: string;
-    createdAt: string;
-    status: string;
-    vendorName: string;
-    bankName: string;
-    accountNumber: string;
-    items?: ICRItem[];
-    amount?: number; // Legacy support
-    description?: string; // Legacy support
-    totalAmount: number;
-    taxAmount?: number;
-    useTax: boolean;
-    approvedByName?: string;
-  };
+  cr: ICashRequest;
 }
 
 /* ================= HELPER ================= */

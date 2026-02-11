@@ -163,7 +163,9 @@ export default function CashRequestDetailPage() {
           },
         ]; // Backward compatibility
 
-  const total = cr.totalAmount || items.reduce((sum, i) => sum + i.total, 0);
+  const total =
+    cr.totalAmount ||
+    items.reduce((sum: number, i: { total: number }) => sum + i.total, 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
