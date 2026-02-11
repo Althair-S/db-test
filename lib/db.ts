@@ -8,11 +8,7 @@ if (!DATABASE_URL) {
   );
 }
 
-try {
-  dns.setServers(["8.8.8.8", "1.1.1.1"]);
-} catch {
-  // Ignore
-}
+
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -35,6 +31,12 @@ async function connect() {
   }
 
   if (!cached.promise) {
+    try {
+      dns.setServers(["8.8.8.8", "1.1.1.1"]);
+    } catch {
+      // Ignore
+    }
+
     const opts = {
       bufferCommands: false,
       dbName: "pr",

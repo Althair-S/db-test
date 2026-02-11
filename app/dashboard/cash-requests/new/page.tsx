@@ -36,7 +36,7 @@ export default function NewCashRequestPage() {
   const [showVendorSuggestions, setShowVendorSuggestions] = useState(false);
   const filteredVendors =
     vendorName === ""
-      ? []
+      ? vendors
       : vendors.filter((v) =>
           v.name.toLowerCase().includes(vendorName.toLowerCase()),
         );

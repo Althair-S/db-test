@@ -49,12 +49,12 @@ export default function PrintTemplate({
   return (
     <div className="hidden print:block font-sans text-black text-xs px-10 py-8">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-start border-b border-black pb-5 mb-6">
+      <div className="flex justify-between items-start border-b border-black pb-5 mb-4">
         <div>
           <h1 className="text-4xl font-extrabold uppercase tracking-wide">
             Purchase Request
           </h1>
-          <p className="text-gray-600 mt-1">Internal Procurement Document</p>
+          <p className="text-gray-600 mt-1">Yayasan Sikola Mombine</p>
         </div>
 
         <div className="text-right">
@@ -73,26 +73,37 @@ export default function PrintTemplate({
       </div>
 
       {/* ================= META INFO ================= */}
-      <div className="grid grid-cols-2 gap-x-10 gap-y-3 mb-6">
-        {[
-          ["Department", pr.department],
-          ["Costing To", pr.costingTo],
-          ["Program Name", ".............."],
-          ["Status", pr.status.toUpperCase()],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="grid grid-cols-[105px_8px_1fr] items-start"
-          >
-            <span className="font-semibold">{label}</span>
+      <div className="flex justify-between items-start mb-4">
+        {/* Left Column */}
+        <div className="space-y-1">
+          {[
+            ["Department", pr.department],
+            ["Program Name", pr.programName],
+            ["Costing To", pr.costingTo],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="grid grid-cols-[105px_8px_1fr] items-start"
+            >
+              <span className="font-semibold">{label}</span>
+              <span>:</span>
+              <span className="break-words">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Right Column */}
+        <div>
+          <div className="grid grid-cols-[80px_8px_1fr] items-start">
+            <span className="font-semibold">Status</span>
             <span>:</span>
-            <span className="break-words">{value}</span>
+            <span className="break-words">{pr.status.toUpperCase()}</span>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* ================= ITEMS TABLE ================= */}
-      <table className="w-full border border-black border-collapse mb-6">
+      <table className="w-full border border-black border-collapse mb-4">
         <thead>
           <tr className="bg-gray-100 text-[11px] uppercase">
             <th className="border border-black px-2 py-2 w-8 text-center">
@@ -154,7 +165,7 @@ export default function PrintTemplate({
       </table>
 
       {/* ================= SIGNATURE ================= */}
-      <div className="grid grid-cols-3 gap-10 mt-12 text-center">
+      <div className="grid grid-cols-3 gap-10 mt-8 text-center">
         {[
           ["Requested By", pr.createdByName, "User"],
           ["Reviewed By", "Finance", "Finance Officer"],
