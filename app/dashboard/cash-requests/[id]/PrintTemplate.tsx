@@ -82,7 +82,7 @@ export default function PrintTemplate({ cr }: PrintTemplateProps) {
           >
             <span className="font-semibold">{label}</span>
             <span>:</span>
-            <span className="break-words">{value}</span>
+            <span className="wrap-break-word">{value}</span>
           </div>
         ))}
       </div>

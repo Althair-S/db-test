@@ -58,6 +58,7 @@ export default function UserProgramsPage({ params }: RouteParams) {
         setError("Gagal memuat data user");
       }
     } catch (err) {
+      console.error("Error fetching user program access:", err);
       setError("Terjadi kesalahan saat memuat data user");
     }
   };
@@ -104,6 +105,7 @@ export default function UserProgramsPage({ params }: RouteParams) {
         setError(data.error || "Gagal menyimpan program access");
       }
     } catch (err) {
+      console.error("Error saving program access:", err);
       setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setSaving(false);

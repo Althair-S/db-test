@@ -217,9 +217,12 @@ export default function NewPurchaseRequestPage() {
                 value={activityName}
                 onChange={(e) => setActivityName(e.target.value)}
                 required
-                placeholder="Contoh: Workshop Pelatihan IT 2026"
+                placeholder="Contoh: Pelatihan Guru Digital 2026, Seminar Entrepreneurship"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Nama kegiatan atau event yang memerlukan pembelian
+              </p>
             </div>
 
             <div>
@@ -231,8 +234,12 @@ export default function NewPurchaseRequestPage() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 required
+                placeholder="Contoh: Pendidikan, Keuangan, IT, Marketing"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Departemen atau divisi yang mengajukan permintaan
+              </p>
             </div>
 
             <div>
@@ -244,9 +251,12 @@ export default function NewPurchaseRequestPage() {
                 onChange={(e) => setBudgeted(e.target.value === "yes")}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               >
-                <option value="no">No</option>
-                <option value="yes">Yes</option>
+                <option value="no">No - Belum dianggarkan</option>
+                <option value="yes">Yes - Sudah dianggarkan</option>
               </select>
+              <p className="mt-1 text-xs text-gray-500">
+                Apakah biaya ini sudah masuk dalam budget/anggaran program?
+              </p>
             </div>
 
             <div className="md:col-span-2">
@@ -258,8 +268,12 @@ export default function NewPurchaseRequestPage() {
                 value={costingTo}
                 onChange={(e) => setCostingTo(e.target.value)}
                 required
+                placeholder="Contoh: Budget Program X 2026, Dana Operasional"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Sumber dana atau pos anggaran yang akan digunakan
+              </p>
             </div>
           </div>
         </div>
@@ -314,7 +328,7 @@ export default function NewPurchaseRequestPage() {
                           updateItem(index, "item", e.target.value)
                         }
                         required
-                        placeholder="Nama item"
+                        placeholder="Contoh: Laptop HP, Proyektor, ATK"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                       />
                     </td>

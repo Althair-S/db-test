@@ -45,6 +45,26 @@ export interface ICashRequest {
   updatedAt: Date;
 }
 
+// Serialized version for client-side use (dates are strings after JSON serialization)
+export type SerializedCashRequest = Omit<
+  ICashRequest,
+  | "createdAt"
+  | "updatedAt"
+  | "approvedAt"
+  | "program"
+  | "vendor"
+  | "createdBy"
+  | "approvedBy"
+> & {
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  program: string;
+  vendor?: string;
+  createdBy: string;
+  approvedBy?: string;
+};
+
 const CRItemSchema = new Schema<ICRItem>(
   {
     description: {

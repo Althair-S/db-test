@@ -206,12 +206,15 @@ export default function NewCashRequestPage() {
           {/* Program Selection */}
           <div className="border-b pb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Program Information
+              Informasi Program
             </h2>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Program <span className="text-red-500">*</span>
+                Pilih Program <span className="text-red-500">*</span>
               </label>
+              <p className="text-xs text-gray-500 mb-2">
+                Program yang akan dibebankan untuk biaya ini
+              </p>
               <select
                 value={programId}
                 onChange={(e) => setProgramId(e.target.value)}
@@ -231,8 +234,11 @@ export default function NewCashRequestPage() {
           {/* Vendor Information */}
           <div className="border-b pb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Vendor Information
+              Informasi Penerima Pembayaran
             </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Masukkan data vendor/supplier yang akan menerima pembayaran
+            </p>
 
             {vendors.length > 0 && (
               <div className="mb-4">
@@ -244,14 +250,14 @@ export default function NewCashRequestPage() {
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <span className="text-sm text-gray-700">
-                    Input vendor manually (not in list)
+                    Input manual (vendor belum terdaftar)
                   </span>
                 </label>
 
                 {!useManualInput && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Existing Vendor
+                      Pilih Vendor yang Sudah Terdaftar
                     </label>
                     <select
                       value={selectedVendor}
@@ -273,7 +279,7 @@ export default function NewCashRequestPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Vendor Name / Contact <span className="text-red-500">*</span>
+                  Nama Vendor <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -282,13 +288,13 @@ export default function NewCashRequestPage() {
                   disabled={!useManualInput && selectedVendor !== ""}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Enter vendor name"
+                  placeholder="Contoh: CV Cahaya Sejahtera"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bank Name <span className="text-red-500">*</span>
+                  Nama Bank <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -297,13 +303,13 @@ export default function NewCashRequestPage() {
                   disabled={!useManualInput && selectedVendor !== ""}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Enter bank name"
+                  placeholder="Contoh: BCA, Bank Mandiri"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Number <span className="text-red-500">*</span>
+                  Nomor Rekening <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -312,7 +318,7 @@ export default function NewCashRequestPage() {
                   disabled={!useManualInput && selectedVendor !== ""}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Enter account number"
+                  placeholder="Contoh: 1234567890"
                 />
               </div>
             </div>
@@ -322,8 +328,11 @@ export default function NewCashRequestPage() {
           <div>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
-                Request Items
+                Rincian Pembayaran
               </h2>
+              <p className="text-xs text-gray-500">
+                Tambahkan detail item/pos yang akan dibayar
+              </p>
               <button
                 type="button"
                 onClick={addItem}
@@ -343,7 +352,7 @@ export default function NewCashRequestPage() {
                   <div className="grow">
                     <input
                       type="text"
-                      placeholder="Item Description"
+                      placeholder="Contoh: Sewa venue, Konsumsi rapat, ATK"
                       value={item.description}
                       onChange={(e) =>
                         updateItem(index, "description", e.target.value)
@@ -355,7 +364,7 @@ export default function NewCashRequestPage() {
                   <div className="w-20">
                     <input
                       type="number"
-                      placeholder="Qty"
+                      placeholder="1"
                       value={item.quantity}
                       onChange={(e) =>
                         updateItem(
@@ -372,7 +381,7 @@ export default function NewCashRequestPage() {
                   <div className="w-32">
                     <input
                       type="number"
-                      placeholder="Price"
+                      placeholder="Harga satuan"
                       value={item.price}
                       onChange={(e) =>
                         updateItem(

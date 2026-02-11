@@ -57,49 +57,56 @@ export default function NewProgramPage() {
         <div className="bg-white rounded-lg shadow p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Program Name <span className="text-red-500">*</span>
+              Nama Program <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              placeholder="e.g., Atlas Project"
+              placeholder="Contoh: Program Pendidikan Literasi 2026"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Nama lengkap program atau kegiatan
+            </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Program Code <span className="text-red-500">*</span>
+              Kode Program <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               required
-              placeholder="e.g., ATLAS"
+              placeholder="Contoh: LITDIG, EDUKIT, SOSMEDI"
               maxLength={10}
               minLength={3}
               pattern="[A-Z0-9]+"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
             />
-            <p className="mt-1 text-sm text-gray-500">
-              3-10 karakter, hanya huruf dan angka (akan otomatis uppercase)
+            <p className="mt-1 text-xs text-gray-500">
+              Kode unik 3-10 karakter (huruf dan angka). Kode ini akan digunakan
+              dalam nomor PR/CR
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              Deskripsi Program (Opsional)
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              placeholder="Deskripsi program (opsional)"
+              placeholder="Jelaskan tujuan dan kegiatan utama program ini..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Informasi tambahan tentang program (opsional)
+            </p>
           </div>
         </div>
 
@@ -123,4 +130,3 @@ export default function NewProgramPage() {
     </div>
   );
 }
-

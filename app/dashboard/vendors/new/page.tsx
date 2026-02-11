@@ -73,7 +73,7 @@ export default function NewVendorPage() {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Vendor Name / Contact <span className="text-red-500">*</span>
+              Nama Vendor / Supplier <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -83,8 +83,11 @@ export default function NewVendorPage() {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Enter vendor name"
+              placeholder="Contoh: CV Abadi Jaya atau PT Sejahtera"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Masukkan nama lengkap vendor atau supplier yang akan dibayar
+            </p>
           </div>
 
           <div>
@@ -92,7 +95,7 @@ export default function NewVendorPage() {
               htmlFor="bankName"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Bank Name <span className="text-red-500">*</span>
+              Nama Bank <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -102,8 +105,11 @@ export default function NewVendorPage() {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Enter bank name"
+              placeholder="Contoh: BCA, Mandiri, BNI, BRI"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Bank tempat rekening vendor terdaftar
+            </p>
           </div>
 
           <div>
@@ -111,7 +117,7 @@ export default function NewVendorPage() {
               htmlFor="accountNumber"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Account Number <span className="text-red-500">*</span>
+              Nomor Rekening <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -121,8 +127,11 @@ export default function NewVendorPage() {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Enter account number"
+              placeholder="Contoh: 1234567890"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Nomor rekening vendor untuk transfer pembayaran
+            </p>
           </div>
 
           <div className="flex space-x-4 pt-4">
