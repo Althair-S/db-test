@@ -9,10 +9,11 @@
  * Run this script ONCE after deploying the program-based PR system
  */
 
-import dbConnect from "./lib/mongodb";
-import Program from "./models/Program";
-import PurchaseRequest from "./models/PurchaseRequest";
-import User from "./models/User";
+import mongoose from "mongoose";
+import dbConnect from "../lib/mongodb";
+import Program from "../models/Program";
+import PurchaseRequest from "../models/PurchaseRequest";
+import User from "../models/User";
 
 async function migrate() {
   console.log("Starting migration...");
@@ -67,7 +68,7 @@ async function migrate() {
     );
 
     for (const pr of prsWithoutProgram) {
-      pr.program = defaultProgram._id;
+      pr.program = new mongoose.Types.ObjectId(defaultProgram._id);
       pr.programName = defaultProgram.name;
       pr.programCode = defaultProgram.code;
       await pr.save();
@@ -94,7 +95,7 @@ async function migrate() {
       if (!user.programAccess) {
         user.programAccess = [];
       }
-      user.programAccess.push(defaultProgram._id);
+      user.programAccess.push(new mongoose.Types.ObjectId(defaultProgram._id));
       await user.save();
       console.log(`✓ Granted access to ${user.name} (${user.email})`);
     }

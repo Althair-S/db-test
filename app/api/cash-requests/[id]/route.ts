@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/mongodb";
 import CashRequest from "@/models/CashRequest";
@@ -78,7 +79,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (session.user.role === "finance") {
       if (status === "approved") {
         cashRequest.status = "approved";
-        cashRequest.approvedBy = session.user.id;
+        cashRequest.approvedBy = new mongoose.Types.ObjectId(session.user.id);
         cashRequest.approvedByName = session.user.name;
         cashRequest.approvedAt = new Date();
       } else if (status === "rejected") {

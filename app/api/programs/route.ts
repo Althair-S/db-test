@@ -27,7 +27,7 @@ export async function GET() {
     } else {
       // Others see only assigned programs that are active
       programs = await Program.find({
-        _id: { $in: programIds },
+        _id: { $in: programIds.map((id) => id.toString()) },
         isActive: true,
       }).sort({ name: 1 });
     }

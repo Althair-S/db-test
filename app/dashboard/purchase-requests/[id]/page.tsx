@@ -232,11 +232,7 @@ export default function PurchaseRequestDetailPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Print Template - Separate Component */}
-      <PrintTemplate
-        pr={pr}
-        formatRupiah={formatRupiah}
-        getTotalAmount={getTotalAmount}
-      />
+      <PrintTemplate pr={pr} getTotalAmount={getTotalAmount} />
 
       <div className="flex justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold text-gray-800">
