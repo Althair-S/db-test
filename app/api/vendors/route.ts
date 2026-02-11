@@ -12,13 +12,8 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Only admin can view vendors
-    if (session.user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Access denied. Admin only." },
-        { status: 403 },
-      );
-    }
+    // Allow all authenticated users to view vendors for autocomplete
+    // if (session.user.role !== "admin") { ... }
 
     await connect();
 
