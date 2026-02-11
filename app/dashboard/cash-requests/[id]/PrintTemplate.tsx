@@ -1,26 +1,25 @@
 import React from "react";
-
-interface PRItem {
-  item: string;
-  quantity: number;
-  unit: string;
-  price: number;
-  totalPrice: number;
-}
+import { ICRItem } from "@/types/cash-request";
 
 interface PrintTemplateProps {
-  pr: {
-    prNumber: string;
-    createdAt: string;
+  cr: {
+    _id: string;
     programName: string;
-    activityName: string;
-    department: string;
+    programCode: string;
     createdByName: string;
+    createdAt: string;
     status: string;
-    costingTo: string;
-    items: PRItem[];
+    vendorName: string;
+    bankName: string;
+    accountNumber: string;
+    items?: ICRItem[];
+    amount?: number; // Legacy support
+    description?: string; // Legacy support
+    totalAmount: number;
+    taxAmount?: number;
+    useTax: boolean;
+    approvedByName?: string;
   };
-  getTotalAmount: () => number;
 }
 
 /* ================= HELPER ================= */
@@ -42,27 +41,41 @@ const MoneyCell = ({
   </div>
 );
 
-export default function PrintTemplate({
-  pr,
-  getTotalAmount,
-}: PrintTemplateProps) {
+export default function PrintTemplate({ cr }: PrintTemplateProps) {
+  // Normalize items for legacy records
+  const items =
+    cr.items && cr.items.length > 0
+      ? cr.items
+      : [
+          {
+            description: cr.description || "N/A",
+            quantity: 1,
+            price: cr.amount || 0,
+            total: cr.amount || 0,
+          },
+        ];
+
+  const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+  const tax = cr.taxAmount || 0;
+  const total = cr.totalAmount || subtotal + tax;
+
   return (
     <div className="hidden print:block font-sans text-black text-xs px-10 py-8">
       {/* ================= HEADER ================= */}
       <div className="flex justify-between items-start border-b border-black pb-5 mb-6">
         <div>
           <h1 className="text-4xl font-extrabold uppercase tracking-wide">
-            Purchase Request
+            Cash Request
           </h1>
-          <p className="text-gray-600 mt-1">Internal Procurement Document</p>
+          <p className="text-gray-600 mt-1">Payment Request Document</p>
         </div>
 
         <div className="text-right">
-          <p className="font-mono font-bold text-lg tracking-wide">
-            {pr.prNumber}
+          <p className="font-mono font-bold text-lg tracking-wide uppercase">
+            {cr.status}
           </p>
           <p className="text-[11px] text-gray-600 mt-1">
-            {new Date(pr.createdAt).toLocaleDateString("id-ID", {
+            {new Date(cr.createdAt).toLocaleDateString("id-ID", {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -75,10 +88,10 @@ export default function PrintTemplate({
       {/* ================= META INFO ================= */}
       <div className="grid grid-cols-2 gap-x-10 gap-y-3 mb-6">
         {[
-          ["Department", pr.department],
-          ["Costing To", pr.costingTo],
-          ["Activity", pr.activityName || "N/A"],
-          ["Status", pr.status.toUpperCase()],
+          ["Program", `${cr.programCode} - ${cr.programName}`],
+          ["Pay To", cr.vendorName],
+          ["Bank", cr.bankName],
+          ["Account No.", cr.accountNumber],
         ].map(([label, value]) => (
           <div
             key={label}
@@ -99,13 +112,10 @@ export default function PrintTemplate({
               No
             </th>
             <th className="border border-black px-2 py-2 text-left">
-              Item Description
+              Description
             </th>
             <th className="border border-black px-2 py-2 w-16 text-center">
               Qty
-            </th>
-            <th className="border border-black px-2 py-2 w-16 text-center">
-              Unit
             </th>
             <th className="border border-black px-2 py-2 w-28 text-center">
               Price
@@ -117,37 +127,65 @@ export default function PrintTemplate({
         </thead>
 
         <tbody>
-          {pr.items.map((item, idx) => (
+          {items.map((item, idx) => (
             <tr key={idx} className="align-top">
               <td className="border border-black px-2 py-2 text-center">
                 {idx + 1}
               </td>
-              <td className="border border-black px-2 py-2">{item.item}</td>
-              <td className="border border-black px-2 py-2 text-center">
-                {item.quantity}
+              <td className="border border-black px-2 py-2">
+                {item.description}
               </td>
               <td className="border border-black px-2 py-2 text-center">
-                {item.unit}
+                {item.quantity}
               </td>
               <td className="border border-black px-2 py-2">
                 <MoneyCell value={item.price} />
               </td>
               <td className="border border-black px-2 py-2">
-                <MoneyCell value={item.totalPrice} bold />
+                <MoneyCell value={item.total} />
               </td>
             </tr>
           ))}
 
-          {/* ================= GRAND TOTAL ================= */}
+          {/* ================= TOTALS ================= */}
+          {/* Subtotal */}
+          <tr className="">
+            <td
+              colSpan={4}
+              className="border border-black px-3 py-2 text-right font-medium"
+            >
+              Subtotal
+            </td>
+            <td className="border border-black px-3 py-2">
+              <MoneyCell value={subtotal} />
+            </td>
+          </tr>
+
+          {/* Tax */}
+          {cr.useTax && (
+            <tr>
+              <td
+                colSpan={4}
+                className="border border-black px-3 py-2 text-right font-medium"
+              >
+                Tax (PPN 11%)
+              </td>
+              <td className="border border-black px-3 py-2">
+                <MoneyCell value={tax} />
+              </td>
+            </tr>
+          )}
+
+          {/* Grand Total */}
           <tr className="font-bold bg-gray-100">
             <td
-              colSpan={5}
+              colSpan={4}
               className="border border-black px-3 py-3 text-right"
             >
               GRAND TOTAL
             </td>
             <td className="border border-black px-3 py-3">
-              <MoneyCell value={getTotalAmount()} bold />
+              <MoneyCell value={total} bold />
             </td>
           </tr>
         </tbody>
@@ -156,9 +194,13 @@ export default function PrintTemplate({
       {/* ================= SIGNATURE ================= */}
       <div className="grid grid-cols-3 gap-10 mt-12 text-center">
         {[
-          ["Requested By", pr.createdByName, "User"],
+          ["Requested By", cr.createdByName, "User"],
           ["Reviewed By", "Finance", "Finance Officer"],
-          ["Approved By", "Direktur Eksekutif", "Authorized"],
+          [
+            "Approved By",
+            cr.approvedByName || "(....................)",
+            "Direktur Eksekutif",
+          ],
         ].map(([title, name, role]) => (
           <div key={title}>
             <p className="mb-14">{title}</p>

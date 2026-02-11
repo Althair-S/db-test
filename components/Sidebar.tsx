@@ -1,19 +1,21 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
-  HomeIcon,
-  DocumentTextIcon,
-  ClipboardDocumentCheckIcon,
   UsersIcon,
   FolderIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  CurrencyDollarIcon,
+  BuildingLibraryIcon,
+  HomeIcon,
+  DocumentTextIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
   const { data: session } = useSession();
@@ -46,9 +48,33 @@ export default function Sidebar() {
       roles: ["admin"],
     },
     {
+      name: "My CRs",
+      href: "/dashboard/cash-requests",
+      icon: CurrencyDollarIcon,
+      roles: ["user"],
+    },
+    {
+      name: "Review CRs",
+      href: "/dashboard/cash-requests",
+      icon: CurrencyDollarIcon,
+      roles: ["finance"],
+    },
+    {
+      name: "All CRs",
+      href: "/dashboard/cash-requests",
+      icon: CurrencyDollarIcon,
+      roles: ["admin"],
+    },
+    {
       name: "Programs",
       href: "/dashboard/programs",
       icon: FolderIcon,
+      roles: ["admin"],
+    },
+    {
+      name: "Vendors",
+      href: "/dashboard/vendors",
+      icon: BuildingLibraryIcon,
       roles: ["admin"],
     },
     {
@@ -90,7 +116,7 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full bg-gradient-to-b from-indigo-900 to-indigo-800 text-white
+          fixed top-0 left-0 h-full bg-linear-to-b from-indigo-900 to-indigo-800 text-white
           transition-transform duration-300 ease-in-out z-40
           ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           w-64 flex flex-col
