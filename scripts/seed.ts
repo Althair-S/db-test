@@ -1,55 +1,64 @@
-import connect from "../lib/db";
-import User from "../models/User";
+import connect from "./lib/db";
+import User from "./models/User";
 import bcrypt from "bcryptjs";
+
+const DEFAULT_USERS = [
+  {
+    email: "admin@system.local",
+    password: "Admin123!@#",
+    name: "System Administrator",
+    role: "admin",
+  },
+  {
+    email: "finance@system.local",
+    password: "Finance123!@#",
+    name: "Finance Manager",
+    role: "finance",
+  },
+  {
+    email: "user@system.local",
+    password: "User123!@#",
+    name: "Regular User",
+    role: "user",
+  },
+];
 
 async function seed() {
   try {
+    console.log("Connecting to database...");
     await connect();
-    console.log("Connected to MongoDB");
+    console.log("Connected to database.");
 
-    // Clear existing users (optional)
-    await User.deleteMany({});
-    console.log("Cleared existing users");
+    for (const user of DEFAULT_USERS) {
+      const existingUser = await User.findOne({ email: user.email });
 
-    // Create admin user
-    const adminPassword = await bcrypt.hash("admin123", 10);
-    await User.create({
-      email: "admin@example.com",
-      password: adminPassword,
-      name: "Admin User",
-      role: "admin",
-    });
-    console.log("Created admin user: admin@example.com / admin123");
+      if (existingUser) {
+        console.log(`User ${user.email} already exists. Updating...`);
+        // Optionally update other fields if needed, but keeping password same if exists might be safer unless intended reset
+        // For seed, let's just ensure they exist. If you want to reset passwords, uncomment below:
+        // const hashedPassword = await bcrypt.hash(user.password, 10);
+        // existingUser.password = hashedPassword;
+        // existingUser.name = user.name;
+        // existingUser.role = user.role as any;
+        // await existingUser.save();
+        console.log(`User ${user.email} skipped (already exists).`);
+      } else {
+        console.log(`Creating user ${user.email}...`);
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        await User.create({
+          email: user.email,
+          password: hashedPassword,
+          name: user.name,
+          role: user.role,
+        });
+        console.log(`User ${user.email} created.`);
+      }
+    }
 
-    // Create finance user
-    const financePassword = await bcrypt.hash("finance123", 10);
-    await User.create({
-      email: "finance@example.com",
-      password: financePassword,
-      name: "Finance User",
-      role: "finance",
-    });
-    console.log("Created finance user: finance@example.com / finance123");
-
-    // Create regular user
-    const userPassword = await bcrypt.hash("user123", 10);
-    await User.create({
-      email: "user@example.com",
-      password: userPassword,
-      name: "Regular User",
-      role: "user",
-    });
-    console.log("Created regular user: user@example.com / user123");
-
-    console.log("\n✅ Seed completed successfully!");
-    console.log("\nYou can now login with:");
-    console.log("- Admin: admin@example.com / admin123");
-    console.log("- Finance: finance@example.com / finance123");
-    console.log("- User: user@example.com / user123");
-
+    console.log("Seeding completed successfully.");
     process.exit(0);
   } catch (error) {
-    console.error("Error seeding database:", error);
+    console.error("Error during seeding:", error);
     process.exit(1);
   }
 }

@@ -1,9 +1,31 @@
 import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" }); // Load .env.local specifically for Next.js dev environment if needed, or rely on default .env
 
-export const DATABASE_URL: string =
+// Load environment variables from .env.local for standalone scripts/tests
+dotenv.config({ path: ".env.local" });
+
+/**
+ * Database connection string.
+ * Supports standard DATABASE_URL or legacy MONGODB_URI.
+ */
+export const DATABASE_URL =
   process.env.DATABASE_URL || process.env.MONGODB_URI || "";
-export const SECRET: string =
-  process.env.SECRET || process.env.NEXTAUTH_SECRET || "";
-export const CLIENT_HOST: string =
-  process.env.CLIENT_HOST || "http://localhost:3000";
+
+/**
+ * Authentication secret used by NextAuth/Auth.js.
+ * Order of precedence: AUTH_SECRET (v5) > SECRET > NEXTAUTH_SECRET (v4).
+ */
+export const SECRET =
+  process.env.AUTH_SECRET ||
+  process.env.SECRET ||
+  process.env.NEXTAUTH_SECRET ||
+  "";
+
+/**
+ * Application base URL.
+ * Automatically detects Vercel environment or defaults to localhost.
+ */
+export const APP_URL =
+  process.env.APP_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
