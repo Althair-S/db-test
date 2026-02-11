@@ -23,20 +23,30 @@ export default function NewCashRequestPage() {
   // const { data: session } = useSession();
   const [vendors, setVendors] = useState<IVendor[]>([]);
   const [selectedVendor, setSelectedVendor] = useState<string>("");
-  const [useManualInput, setUseManualInput] = useState(false);
   const [programs, setPrograms] = useState<Program[]>([]);
 
   // Form State
   const [programId, setProgramId] = useState("");
+  const [activityName, setActivityName] = useState(""); // New field
   const [vendorName, setVendorName] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+
+  // Vendor Autocomplete Logic
+  const [showVendorSuggestions, setShowVendorSuggestions] = useState(false);
+  const filteredVendors =
+    vendorName === ""
+      ? []
+      : vendors.filter((v) =>
+          v.name.toLowerCase().includes(vendorName.toLowerCase()),
+        );
 
   // Item List State
   const [items, setItems] = useState<RequestItem[]>([
     { description: "", quantity: 1, price: 0 },
   ]);
   const [useTax, setUseTax] = useState(false);
+  const [taxPercentage, setTaxPercentage] = useState<number>(0);
 
   // Totals
   const [subtotal, setSubtotal] = useState(0);
@@ -64,42 +74,41 @@ export default function NewCashRequestPage() {
   }, []);
 
   // Calculate totals whenever items or tax changes
+  // Calculate totals whenever items or tax changes POINTER
   useEffect(() => {
     const newSubtotal = items.reduce(
       (sum, item) => sum + item.quantity * item.price,
       0,
     );
-    const newTax = useTax ? newSubtotal * 0.11 : 0;
+
+    // Tax Calculation (Deduction)
+    const newTax = useTax ? newSubtotal * (taxPercentage / 100) : 0;
 
     setSubtotal(newSubtotal);
     setTaxAmount(newTax);
-    setGrandTotal(newSubtotal + newTax);
-  }, [items, useTax]);
+    // Grand Total = Subtotal - Tax
+    setGrandTotal(newSubtotal - newTax);
+  }, [items, useTax, taxPercentage]);
 
-  const handleVendorSelect = (vendorId: string) => {
-    setSelectedVendor(vendorId);
-    setUseManualInput(false);
+  const handleVendorNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setVendorName(value);
+    setSelectedVendor(""); // Reset selected vendor ID when typing
+    setShowVendorSuggestions(true);
 
-    if (vendorId) {
-      const vendor = vendors.find((v) => v._id === vendorId);
-      if (vendor) {
-        setVendorName(vendor.name);
-        setBankName(vendor.bankName);
-        setAccountNumber(vendor.accountNumber);
-      }
-    } else {
-      setVendorName("");
+    // If clearing name, also clear details
+    if (value === "") {
       setBankName("");
       setAccountNumber("");
     }
   };
 
-  const handleManualToggle = () => {
-    setUseManualInput(!useManualInput);
-    setSelectedVendor("");
-    setVendorName("");
-    setBankName("");
-    setAccountNumber("");
+  const selectVendor = (vendor: IVendor) => {
+    setVendorName(vendor.name);
+    setBankName(vendor.bankName);
+    setAccountNumber(vendor.accountNumber);
+    setSelectedVendor(vendor._id);
+    setShowVendorSuggestions(false);
   };
 
   const addItem = () => {
@@ -151,12 +160,14 @@ export default function NewCashRequestPage() {
     try {
       const payload = {
         programId,
+        activityName,
         vendorId: selectedVendor || undefined,
         vendorName,
         bankName,
         accountNumber,
         items,
         useTax,
+        taxPercentage: useTax ? taxPercentage : 0,
       };
 
       const response = await fetch("/api/cash-requests", {
@@ -206,122 +217,163 @@ export default function NewCashRequestPage() {
           {/* Program Selection */}
           <div className="border-b pb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Informasi Program
+              Informasi Program & Kegiatan
             </h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pilih Program <span className="text-red-500">*</span>
-              </label>
-              <p className="text-xs text-gray-500 mb-2">
-                Program yang akan dibebankan untuk biaya ini
-              </p>
-              <select
-                value={programId}
-                onChange={(e) => setProgramId(e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                <option value="">-- Select Program --</option>
-                {programs.map((program) => (
-                  <option key={program._id} value={program._id}>
-                    {program.code} - {program.name}
-                  </option>
-                ))}
-              </select>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Pilih Program <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={programId}
+                  onChange={(e) => setProgramId(e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                >
+                  <option value="">-- Select Program --</option>
+                  {programs.map((program) => (
+                    <option key={program._id} value={program._id}>
+                      {program.code} - {program.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Activity Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nama Kegiatan <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={activityName}
+                  onChange={(e) => setActivityName(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-400"
+                  placeholder="e.g. Workshop Pelatihan Staff"
+                  required
+                />
+              </div>
             </div>
           </div>
 
           {/* Vendor Information */}
-          <div className="border-b pb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Informasi Penerima Pembayaran
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Masukkan data vendor/supplier yang akan menerima pembayaran
-            </p>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Informasi Penerima Pembayaran (Vendor)
+            </h3>
 
-            {vendors.length > 0 && (
-              <div className="mb-4">
-                <label className="flex items-center space-x-2 mb-4">
-                  <input
-                    type="checkbox"
-                    checked={useManualInput}
-                    onChange={handleManualToggle}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Input manual (vendor belum terdaftar)
-                  </span>
-                </label>
+            {/* Vendor Name with Autocomplete */}
+            <div className="mb-4 relative">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Nama Vendor / Penerima
+              </label>
+              <input
+                type="text"
+                value={vendorName}
+                onChange={handleVendorNameChange}
+                onFocus={() => setShowVendorSuggestions(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowVendorSuggestions(false), 200)
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-400"
+                placeholder="Start typing to search or enter new vendor..."
+                required
+              />
 
-                {!useManualInput && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Pilih Vendor yang Sudah Terdaftar
-                    </label>
-                    <select
-                      value={selectedVendor}
-                      onChange={(e) => handleVendorSelect(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              {/* Autocomplete Dropdown */}
+              {showVendorSuggestions && filteredVendors.length > 0 && (
+                <div className="absolute z-10 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm mt-1">
+                  {filteredVendors.map((vendor) => (
+                    <div
+                      key={vendor._id}
+                      className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50 text-gray-900"
+                      onClick={() => selectVendor(vendor)}
                     >
-                      <option value="">-- Select Vendor --</option>
-                      {vendors.map((vendor) => (
-                        <option key={vendor._id} value={vendor._id}>
-                          {vendor.name} - {vendor.bankName}
-                        </option>
-                      ))}
-                    </select>
+                      <span className="block truncate font-medium">
+                        {vendor.name}
+                      </span>
+                      <span className="block truncate text-xs text-gray-500">
+                        {vendor.bankName} - {vendor.accountNumber}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {showVendorSuggestions &&
+                vendorName &&
+                filteredVendors.length === 0 && (
+                  <div className="absolute z-10 w-full bg-white shadow-lg rounded-md py-2 px-3 text-sm text-gray-500 mt-1 border border-gray-100">
+                    New vendor will be added automatically
                   </div>
                 )}
-              </div>
-            )}
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Vendor <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={vendorName}
-                  onChange={(e) => setVendorName(e.target.value)}
-                  disabled={!useManualInput && selectedVendor !== ""}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Contoh: CV Cahaya Sejahtera"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Bank <span className="text-red-500">*</span>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Nama Bank
                 </label>
                 <input
                   type="text"
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
-                  disabled={!useManualInput && selectedVendor !== ""}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-400"
+                  placeholder="e.g. BCA, Mandiri"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Contoh: BCA, Bank Mandiri"
                 />
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nomor Rekening <span className="text-red-500">*</span>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Nomor Rekening
                 </label>
                 <input
                   type="text"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
-                  disabled={!useManualInput && selectedVendor !== ""}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-400"
+                  placeholder="e.g. 1234567890"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="Contoh: 1234567890"
                 />
               </div>
             </div>
+
+            {/* Auto-fill notification */}
+            {selectedVendor && (
+              <p className="text-xs text-green-600 mt-2 flex items-center">
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Vendor details auto-filled from database
+              </p>
+            )}
+            {!selectedVendor && vendorName && (
+              <p className="text-xs text-blue-600 mt-2 flex items-center">
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                New vendor will be saved to database
+              </p>
+            )}
           </div>
 
           {/* Items Section */}
@@ -357,7 +409,7 @@ export default function NewCashRequestPage() {
                       onChange={(e) =>
                         updateItem(index, "description", e.target.value)
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 placeholder-gray-400"
                       required
                     />
                   </div>
@@ -373,7 +425,7 @@ export default function NewCashRequestPage() {
                           parseInt(e.target.value) || 0,
                         )
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-center"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-center text-gray-900 placeholder-gray-400 font-medium"
                       min="1"
                       required
                     />
@@ -390,7 +442,7 @@ export default function NewCashRequestPage() {
                           parseFloat(e.target.value) || 0,
                         )
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-right"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-right text-gray-900 placeholder-gray-400 font-medium"
                       min="0"
                       required
                     />
@@ -417,18 +469,41 @@ export default function NewCashRequestPage() {
                 <span className="font-mono">{formatCurrency(subtotal)}</span>
               </div>
 
-              <div className="flex justify-between items-center">
-                <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={useTax}
-                    onChange={(e) => setUseTax(e.target.checked)}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span>Apply Tax (PPN 11%)</span>
-                </label>
-                <span className="font-mono text-sm text-gray-600">
-                  {formatCurrency(taxAmount)}
+              <div className="flex justify-between items-start">
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={useTax}
+                      onChange={(e) => {
+                        setUseTax(e.target.checked);
+                        if (!e.target.checked) setTaxPercentage(0);
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span>Apply Tax (Deduction)</span>
+                  </label>
+
+                  {useTax && (
+                    <div className="flex items-center space-x-2 ml-6">
+                      <span className="text-sm text-gray-600">Rate:</span>
+                      <input
+                        type="number"
+                        value={taxPercentage}
+                        onChange={(e) =>
+                          setTaxPercentage(parseFloat(e.target.value) || 0)
+                        }
+                        className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 text-right text-gray-900 font-medium"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                      />
+                      <span className="text-sm text-gray-600">%</span>
+                    </div>
+                  )}
+                </div>
+                <span className="font-mono text-sm text-red-600">
+                  - {formatCurrency(taxAmount)}
                 </span>
               </div>
 

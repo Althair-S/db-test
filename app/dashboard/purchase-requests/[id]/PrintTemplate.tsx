@@ -77,7 +77,7 @@ export default function PrintTemplate({
         {[
           ["Department", pr.department],
           ["Costing To", pr.costingTo],
-          ["Activity", pr.activityName || "N/A"],
+          ["Program Name", ".............."],
           ["Status", pr.status.toUpperCase()],
         ].map(([label, value]) => (
           <div
@@ -158,7 +158,7 @@ export default function PrintTemplate({
         {[
           ["Requested By", pr.createdByName, "User"],
           ["Reviewed By", "Finance", "Finance Officer"],
-          ["Approved By", "Direktur Eksekutif", "Authorized"],
+          ["Approved By", "Nur Safitri Lasibani", "Executive Director"],
         ].map(([title, name, role]) => (
           <div key={title}>
             <p className="mb-14">{title}</p>

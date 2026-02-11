@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       programId,
+      activityName, // New field
       vendorId,
       vendorName,
       bankName,
@@ -88,6 +89,13 @@ export async function POST(request: NextRequest) {
     if (!programId) {
       return NextResponse.json(
         { error: "Program is required" },
+        { status: 400 },
+      );
+    }
+
+    if (!activityName) {
+      return NextResponse.json(
+        { error: "Activity name is required" },
         { status: 400 },
       );
     }
@@ -129,13 +137,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let finalVendorId = vendorId;
     let finalVendorName = vendorName;
     let finalBankName = bankName;
     let finalAccountNumber = accountNumber;
 
     // If vendorId is provided, fetch vendor details
-    if (vendorId) {
-      const vendor = await Vendor.findById(vendorId);
+    if (finalVendorId) {
+      const vendor = await Vendor.findById(finalVendorId);
 
       if (!vendor) {
         return NextResponse.json(
@@ -148,12 +157,48 @@ export async function POST(request: NextRequest) {
       finalBankName = vendor.bankName;
       finalAccountNumber = vendor.accountNumber;
     } else {
-      // Manual input - validate all fields are provided
+      // Manual input provided - Check if we should auto-create or link to existing vendor
       if (!vendorName || !bankName || !accountNumber) {
         return NextResponse.json(
           { error: "Vendor details are required" },
           { status: 400 },
         );
+      }
+
+      // Check if vendor with this name already exists (case insensitive)
+      const existingVendor = await Vendor.findOne({
+        name: { $regex: new RegExp(`^${vendorName}$`, "i") },
+      });
+
+      if (existingVendor) {
+        // Use existing vendor
+        finalVendorId = existingVendor._id;
+        // Optionally update details? For now, we'll keep existing vendor details to be safe,
+        // or we could overwrite. Let's stick to using the existing vendor's *official* details
+        // to ensure consistency, but if they differ significantly it might be confusing.
+        // User requirement: "if vendor name sdh ada... helps filling...".
+        // Implies we probably already selected it in UI, but if we typed it manually and it matched, use it.
+        finalVendorName = existingVendor.name;
+        finalBankName = existingVendor.bankName;
+        finalAccountNumber = existingVendor.accountNumber;
+      } else {
+        // Create new vendor
+        try {
+          const newVendor = await Vendor.create({
+            name: vendorName,
+            bankName: bankName,
+            accountNumber: accountNumber,
+            createdBy: session.user.id,
+          });
+          finalVendorId = newVendor._id;
+          finalVendorName = newVendor.name;
+          finalBankName = newVendor.bankName;
+          finalAccountNumber = newVendor.accountNumber;
+        } catch (error) {
+          console.error("Error auto-creating vendor:", error);
+          // Fallback to manual (no ID) if creation fails for some reason,
+          // though validation should catch most issues.
+        }
       }
     }
 
@@ -180,25 +225,34 @@ export async function POST(request: NextRequest) {
     );
 
     // Calculate Tax
+    // User Requirement: "Grand total = Sum Item - tax"
+    // Tax is calculated as a percentage of the subtotal (PPh deduction)
     let taxAmount = 0;
+    let taxPercent = 0;
+
     if (useTax) {
-      taxAmount = calculatedTotal * 0.11; // 11% Tax
+      // Extract tax percentage from request body or default to 0
+      taxPercent = Number(body.taxPercentage) || 0;
+      taxAmount = calculatedTotal * (taxPercent / 100);
     }
 
-    const finalTotalAmount = calculatedTotal + taxAmount;
+    // Deduction logic: Total = Subtotal - Tax
+    const finalTotalAmount = calculatedTotal - taxAmount;
 
     // Create cash request
     const cashRequest = await CashRequest.create({
       program: programId,
       programName: program.name,
       programCode: program.code,
-      vendor: vendorId || undefined,
+      activityName: activityName,
+      vendor: finalVendorId || undefined,
       vendorName: finalVendorName,
       bankName: finalBankName,
       accountNumber: finalAccountNumber,
       items: processedItems,
       totalAmount: finalTotalAmount,
       taxAmount: taxAmount,
+      taxPercentage: taxPercent, // Save the percentage
       useTax: Boolean(useTax),
       status: "pending",
       createdBy: session.user.id,

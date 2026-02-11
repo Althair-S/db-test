@@ -234,6 +234,12 @@ export default function CashRequestDetailPage() {
                 {cr.programCode || "-"}
               </p>
             </div>
+            <div className="md:col-span-2">
+              <p className="text-sm text-gray-600">Activity Name</p>
+              <p className="font-medium text-gray-900">
+                {cr.activityName || "-"}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -305,12 +311,12 @@ export default function CashRequestDetailPage() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-2 text-sm font-medium text-gray-900 text-right"
+                    className="px-4 py-2 text-sm font-medium text-red-600 text-right"
                   >
-                    Tax (11%)
+                    Tax Deduction ({cr.taxPercentage || 0}%)
                   </td>
-                  <td className="px-4 py-2 text-sm font-medium text-gray-900 text-right">
-                    {formatCurrency(cr.taxAmount || 0)}
+                  <td className="px-4 py-2 text-sm font-medium text-red-600 text-right">
+                    - {formatCurrency(cr.taxAmount || 0)}
                   </td>
                 </tr>
               )}
@@ -319,7 +325,7 @@ export default function CashRequestDetailPage() {
                   colSpan={3}
                   className="px-4 py-2 text-sm font-bold text-gray-900 text-right"
                 >
-                  Grand Total
+                  Grand Total (Net)
                 </td>
                 <td className="px-4 py-2 text-sm font-bold text-gray-900 text-right">
                   {formatCurrency(total)}

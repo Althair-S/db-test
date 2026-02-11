@@ -18,7 +18,9 @@ export type ICashRequest = Omit<
   updatedAt: string;
   approvedAt?: string;
   program: string;
+  activityName: string;
   vendor?: string;
+  taxPercentage?: number;
   createdBy: string;
   approvedBy?: string;
 };

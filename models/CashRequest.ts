@@ -14,6 +14,9 @@ export interface ICashRequest {
   programName: string;
   programCode: string;
 
+  // Request Details
+  activityName: string; // New field for Activity Name
+
   // Vendor Information
   vendor?: mongoose.Types.ObjectId;
   vendorName: string;
@@ -24,8 +27,10 @@ export interface ICashRequest {
   items: ICRItem[];
 
   // Totals
-  totalAmount: number; // Grand total (including tax)
+  // Totals
+  totalAmount: number; // Grand total (Subtotal - Tax)
   taxAmount?: number; // Tax amount if applicable
+  taxPercentage?: number; // Manual tax percentage (e.g. 2 for 2%)
   useTax: boolean; // Whether tax was applied
 
   // Deprecated/Legacy fields (kept for backward compatibility if needed, but we'll migrate)
@@ -108,6 +113,11 @@ const CashRequestSchema = new Schema<ICashRequest>(
       uppercase: true,
       trim: true,
     },
+    activityName: {
+      type: String,
+      required: [true, "Activity name is required"],
+      trim: true,
+    },
     vendor: {
       type: Schema.Types.ObjectId,
       ref: "Vendor",
@@ -145,6 +155,10 @@ const CashRequestSchema = new Schema<ICashRequest>(
       min: [0, "Total amount must be positive"],
     },
     taxAmount: {
+      type: Number,
+      default: 0,
+    },
+    taxPercentage: {
       type: Number,
       default: 0,
     },

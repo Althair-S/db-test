@@ -178,12 +178,8 @@ export default function PrintTemplate({ cr }: PrintTemplateProps) {
       <div className="grid grid-cols-3 gap-10 mt-12 text-center">
         {[
           ["Requested By", cr.createdByName, "User"],
-          ["Reviewed By", "Finance", "Finance Officer"],
-          [
-            "Approved By",
-            cr.approvedByName || "(....................)",
-            "Direktur Eksekutif",
-          ],
+          ["Reviewed By", cr.approvedByName, "Finance Officer"],
+          ["Approved By", "Nur Safitri Lasibani", "Executive Director"],
         ].map(([title, name, role]) => (
           <div key={title}>
             <p className="mb-14">{title}</p>

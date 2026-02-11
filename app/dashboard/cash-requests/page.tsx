@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ICashRequest } from "@/types/cash-request";
+import Pagination from "@/components/Pagination";
 
 export default function CashRequestsPage() {
   const { data: session } = useSession();
@@ -12,6 +13,11 @@ export default function CashRequestsPage() {
   const [filter, setFilter] = useState<
     "all" | "pending" | "approved" | "rejected"
   >("all");
+
+  // Search and Pagination
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchCRs();
@@ -32,9 +38,29 @@ export default function CashRequestsPage() {
   };
 
   const filteredCRs = crs.filter((cr) => {
-    if (filter === "all") return true;
-    return cr.status === filter;
+    // Status filter
+    const matchesStatus = filter === "all" ? true : cr.status === filter;
+
+    // Search filter
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      (cr.vendorName?.toLowerCase() || "").includes(searchLower) ||
+      (cr.programName?.toLowerCase() || "").includes(searchLower) ||
+      (cr.description?.toLowerCase() || "").includes(searchLower) ||
+      (cr.createdByName?.toLowerCase() || "").includes(searchLower);
+
+    return matchesStatus && matchesSearch;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCRs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCRs = filteredCRs.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm]);
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -150,88 +176,111 @@ export default function CashRequestsPage() {
             Rejected
           </button>
         </div>
+
+        <div className="mt-4">
+          <input
+            type="text"
+            placeholder="Search by Program, Vendor, Description, or Creator..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+          />
+        </div>
       </div>
 
       {/* CR List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        {filteredCRs.length === 0 ? (
+        {paginatedCRs.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            Tidak ada cash request
+            {searchTerm
+              ? "No cash requests found matching your search"
+              : "No cash requests found"}
           </div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Program
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Vendor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created By
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredCRs.map((cr) => (
-                <tr key={cr._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded block w-fit mb-1">
-                      {cr.programCode || "-"}
-                    </span>
-                    <span className="text-xs">
-                      {cr.programName || "No Program"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {cr.vendorName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                    {formatCurrency(cr.totalAmount ?? cr.amount ?? 0)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                    {cr.description ||
-                      (cr.items && cr.items.length > 0
-                        ? cr.items[0].description
-                        : "-")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {cr.createdByName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(
-                        cr.status,
-                      )}`}
-                    >
-                      {cr.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link
-                      href={`/dashboard/cash-requests/${cr._id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      View
-                    </Link>
-                  </td>
+          <>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Program
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Vendor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created By
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedCRs.map((cr) => (
+                  <tr key={cr._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded block w-fit mb-1">
+                        {cr.programCode || "-"}
+                      </span>
+                      <span className="text-xs">
+                        {cr.programName || "No Program"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {cr.vendorName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                      {formatCurrency(cr.totalAmount ?? cr.amount ?? 0)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                      {cr.description ||
+                        (cr.items && cr.items.length > 0
+                          ? cr.items[0].description
+                          : "-")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {cr.createdByName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(
+                          cr.status,
+                        )}`}
+                      >
+                        {cr.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Link
+                        href={`/dashboard/cash-requests/${cr._id}`}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        View
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredCRs.length}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          </>
         )}
       </div>
     </div>
