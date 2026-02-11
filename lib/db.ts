@@ -38,6 +38,9 @@ async function connect() {
     const opts = {
       bufferCommands: false,
       dbName: "pr",
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      family: 4, // Use IPv4, skip trying IPv6
     };
 
     cached.promise = mongoose.connect(DATABASE_URL, opts).then((mongoose) => {
