@@ -25,14 +25,14 @@ export default async function DashboardPage() {
           <>
             <Link
               href="/dashboard/purchase-requests"
-              className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
+              className="bg-linear-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
             >
               <h2 className="text-xl font-bold mb-2">My Purchase Requests</h2>
               <p className="text-blue-100">Lihat dan kelola PR Anda</p>
             </Link>
             <Link
               href="/dashboard/purchase-requests/new"
-              className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
+              className="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
             >
               <h2 className="text-xl font-bold mb-2">Buat PR Baru</h2>
               <p className="text-green-100">Ajukan purchase request baru</p>
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
         {session.user.role === "finance" && (
           <Link
             href="/dashboard/purchase-requests"
-            className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
+            className="bg-linear-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
           >
             <h2 className="text-xl font-bold mb-2">Review Purchase Requests</h2>
             <p className="text-purple-100">Approve atau reject PR</p>
@@ -54,14 +54,14 @@ export default async function DashboardPage() {
           <>
             <Link
               href="/dashboard/purchase-requests"
-              className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
+              className="bg-linear-to-br from-indigo-500 to-indigo-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
             >
               <h2 className="text-xl font-bold mb-2">All Purchase Requests</h2>
               <p className="text-indigo-100">Lihat semua PR</p>
             </Link>
             <Link
               href="/dashboard/users"
-              className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
+              className="bg-linear-to-br from-orange-500 to-orange-600 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1"
             >
               <h2 className="text-xl font-bold mb-2">Manage Users</h2>
               <p className="text-orange-100">Kelola user dan role</p>

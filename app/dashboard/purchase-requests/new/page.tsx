@@ -65,7 +65,7 @@ export default function NewPurchaseRequestPage() {
         const data = await response.json();
         setPrograms(data);
       }
-    } catch {
+    } catch (err) {
       console.error("Error fetching programs:", err);
     } finally {
       setLoadingPrograms(false);
@@ -167,7 +167,7 @@ export default function NewPurchaseRequestPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Program <span className="text-red-500">*</span>
               </label>
               {loadingPrograms ? (
@@ -184,7 +184,7 @@ export default function NewPurchaseRequestPage() {
                   value={programId}
                   onChange={(e) => setProgramId(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 >
                   <option value="">Pilih Program</option>
                   {programs.map((program) => (
@@ -197,7 +197,7 @@ export default function NewPurchaseRequestPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 PR Number (Auto-Generated)
               </label>
               <div className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700 font-semibold">
@@ -209,7 +209,7 @@ export default function NewPurchaseRequestPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Nama Kegiatan <span className="text-red-500">*</span>
               </label>
               <input
@@ -218,12 +218,12 @@ export default function NewPurchaseRequestPage() {
                 onChange={(e) => setActivityName(e.target.value)}
                 required
                 placeholder="Contoh: Workshop Pelatihan IT 2026"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Department <span className="text-red-500">*</span>
               </label>
               <input
@@ -231,18 +231,18 @@ export default function NewPurchaseRequestPage() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Budgeted <span className="text-red-500">*</span>
               </label>
               <select
                 value={budgeted ? "yes" : "no"}
                 onChange={(e) => setBudgeted(e.target.value === "yes")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               >
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
@@ -250,7 +250,7 @@ export default function NewPurchaseRequestPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Costing To <span className="text-red-500">*</span>
               </label>
               <input
@@ -258,7 +258,7 @@ export default function NewPurchaseRequestPage() {
                 value={costingTo}
                 onChange={(e) => setCostingTo(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
@@ -283,22 +283,22 @@ export default function NewPurchaseRequestPage() {
             <table className="min-w-full border border-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
                     Name Item
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-24">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200 w-24">
                     Qty
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-32">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200 w-32">
                     Unit
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-40">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200 w-40">
                     Price
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 w-40">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200 w-40">
                     Total Price
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b border-gray-200 w-32">
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 border-b border-gray-200 w-32">
                     Actions
                   </th>
                 </tr>
@@ -315,7 +315,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         placeholder="Nama item"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -327,7 +327,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         min="1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -339,7 +339,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         placeholder="pcs, kg"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -352,7 +352,7 @@ export default function NewPurchaseRequestPage() {
                         required
                         min="0"
                         placeholder="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -421,4 +421,3 @@ export default function NewPurchaseRequestPage() {
     </div>
   );
 }
-
