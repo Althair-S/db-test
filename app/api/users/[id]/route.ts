@@ -52,7 +52,12 @@ export async function PUT(
 
     await dbConnect();
 
-    const updateData: any = {};
+    const updateData: {
+      email?: string;
+      name?: string;
+      role?: string;
+      password?: string;
+    } = {};
     if (email) updateData.email = email.toLowerCase();
     if (name) updateData.name = name;
     if (role) {

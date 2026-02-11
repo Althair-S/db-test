@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Migration script to add program support to existing data
  *

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import connect from "../lib/db";
 import mongoose from "mongoose";
 

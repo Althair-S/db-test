@@ -1,4 +1,4 @@
-import dbConnect from "./mongodb";
+import dbConnect from "./db";
 import User from "@/models/User";
 import mongoose from "mongoose";
 

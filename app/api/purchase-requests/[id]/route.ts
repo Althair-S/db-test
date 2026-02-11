@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import PurchaseRequest from "@/models/PurchaseRequest";
@@ -86,7 +87,7 @@ export async function PUT(
       }
 
       pr.status = status;
-      pr.approvedBy = session.user.id as any;
+      pr.approvedBy = session.user.id as unknown as mongoose.Types.ObjectId;
       pr.approvedByName = session.user.name;
       pr.approvedAt = new Date();
 

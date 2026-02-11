@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import PurchaseRequest from "@/models/PurchaseRequest";
@@ -60,7 +61,7 @@ export async function POST(
     }
 
     pr.comments.push({
-      commentedBy: session.user.id as any,
+      commentedBy: session.user.id as unknown as mongoose.Types.ObjectId,
       commentedByName: session.user.name,
       commentedByRole: session.user.role,
       comment: comment.trim(),

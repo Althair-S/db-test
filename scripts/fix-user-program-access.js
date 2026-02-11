@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { MongoClient, ObjectId } = require('mongodb');
 
 const MONGODB_URI = 'mongodb://localhost:27017';
