@@ -82,7 +82,7 @@ export default function NewVendorPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
               placeholder="Contoh: CV Abadi Jaya atau PT Sejahtera"
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -104,7 +104,7 @@ export default function NewVendorPage() {
               value={formData.bankName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
               placeholder="Contoh: BCA, Mandiri, BNI, BRI"
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -126,7 +126,7 @@ export default function NewVendorPage() {
               value={formData.accountNumber}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
               placeholder="Contoh: 1234567890"
             />
             <p className="mt-1 text-xs text-gray-500">

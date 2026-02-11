@@ -184,7 +184,7 @@ export default function NewPurchaseRequestPage() {
                   value={programId}
                   onChange={(e) => setProgramId(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent -gray-400"
                 >
                   <option value="">Pilih Program</option>
                   {programs.map((program) => (
@@ -218,7 +218,7 @@ export default function NewPurchaseRequestPage() {
                 onChange={(e) => setActivityName(e.target.value)}
                 required
                 placeholder="Contoh: Pelatihan Guru Digital 2026, Seminar Entrepreneurship"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent -gray-400"
               />
               <p className="mt-1 text-xs text-gray-500">
                 Nama kegiatan atau event yang memerlukan pembelian
@@ -235,7 +235,7 @@ export default function NewPurchaseRequestPage() {
                 onChange={(e) => setDepartment(e.target.value)}
                 required
                 placeholder="Contoh: Pendidikan, Keuangan, IT, Marketing"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent -gray-400"
               />
               <p className="mt-1 text-xs text-gray-500">
                 Departemen atau divisi yang mengajukan permintaan
@@ -249,7 +249,7 @@ export default function NewPurchaseRequestPage() {
               <select
                 value={budgeted ? "yes" : "no"}
                 onChange={(e) => setBudgeted(e.target.value === "yes")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent -gray-400"
               >
                 <option value="no">No - Belum dianggarkan</option>
                 <option value="yes">Yes - Sudah dianggarkan</option>
@@ -269,7 +269,7 @@ export default function NewPurchaseRequestPage() {
                 onChange={(e) => setCostingTo(e.target.value)}
                 required
                 placeholder="Contoh: Budget Program X 2026, Dana Operasional"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent -gray-400"
               />
               <p className="mt-1 text-xs text-gray-500">
                 Sumber dana atau pos anggaran yang akan digunakan
@@ -329,7 +329,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         placeholder="Contoh: Laptop HP, Proyektor, ATK"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm -gray-400"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -341,7 +341,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         min="1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm -gray-400"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -353,7 +353,7 @@ export default function NewPurchaseRequestPage() {
                         }
                         required
                         placeholder="pcs, kg"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm -gray-400"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -366,7 +366,7 @@ export default function NewPurchaseRequestPage() {
                         required
                         min="0"
                         placeholder="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm -gray-400"
                       />
                     </td>
                     <td className="px-4 py-3 border-b border-gray-200">
@@ -435,3 +435,4 @@ export default function NewPurchaseRequestPage() {
     </div>
   );
 }
+

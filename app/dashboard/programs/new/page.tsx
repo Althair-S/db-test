@@ -65,7 +65,7 @@ export default function NewProgramPage() {
               onChange={(e) => setName(e.target.value)}
               required
               placeholder="Contoh: Program Pendidikan Literasi 2026"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
             />
             <p className="mt-1 text-xs text-gray-500">
               Nama lengkap program atau kegiatan
@@ -85,7 +85,7 @@ export default function NewProgramPage() {
               maxLength={10}
               minLength={3}
               pattern="[A-Z0-9]+"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase text-gray-900 placeholder-gray-400 font-semibold"
             />
             <p className="mt-1 text-xs text-gray-500">
               Kode unik 3-10 karakter (huruf dan angka). Kode ini akan digunakan
@@ -102,7 +102,7 @@ export default function NewProgramPage() {
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               placeholder="Jelaskan tujuan dan kegiatan utama program ini..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-400"
             />
             <p className="mt-1 text-xs text-gray-500">
               Informasi tambahan tentang program (opsional)
