@@ -25,7 +25,7 @@ export default function ProgramsPage() {
 
   // Redirect if not admin
   useEffect(() => {
-    if (session && session.user.role !== "admin") {
+    if (session?.user?.role !== "admin") {
       router.push("/dashboard");
     }
   }, [session, router]);
@@ -82,7 +82,7 @@ export default function ProgramsPage() {
     );
   }
 
-  if (session?.user.role !== "admin") {
+  if (session?.user?.role !== "admin") {
     return null;
   }
 

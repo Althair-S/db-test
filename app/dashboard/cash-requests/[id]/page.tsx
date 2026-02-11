@@ -370,7 +370,7 @@ export default function CashRequestDetailPage() {
         </div>
 
         {/* Actions (Finance only, for pending requests) */}
-        {session?.user.role === "finance" && cr.status === "pending" && (
+        {session?.user?.role === "finance" && cr.status === "pending" && (
           <div className="px-6 py-4">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               Actions

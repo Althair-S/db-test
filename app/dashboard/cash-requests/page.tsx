@@ -65,12 +65,12 @@ export default function CashRequestsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">
-          {session?.user.role === "user" && "My Cash Requests"}
-          {session?.user.role === "finance" && "Review Cash Requests"}
-          {session?.user.role === "admin" && "All Cash Requests"}
+          {session?.user?.role === "user" && "My Cash Requests"}
+          {session?.user?.role === "finance" && "Review Cash Requests"}
+          {session?.user?.role === "admin" && "All Cash Requests"}
         </h1>
-        {(session?.user.role === "user" ||
-          session?.user.role === "finance") && (
+        {(session?.user?.role === "user" ||
+          session?.user?.role === "finance") && (
           <Link
             href="/dashboard/cash-requests/new"
             className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"

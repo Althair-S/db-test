@@ -8,25 +8,18 @@ if (!DATABASE_URL) {
   );
 }
 
-// Force Google DNS to resolve MongoDB Atlas hostnames
-// This is required because the system DNS (127.0.0.1) is failing to resolve the SRV record
 try {
   dns.setServers(["8.8.8.8", "1.1.1.1"]);
 } catch {
   // Ignore
 }
 
-/**
- * Global variable for caching the MongoDB connection in development.
- * This prevents creating multiple connections during hot-reloading.
- */
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var mongoose: MongooseCache;
 }
 
