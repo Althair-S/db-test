@@ -34,7 +34,7 @@ export default function NewProgramPage() {
         const data = await response.json();
         setError(data.error || "Gagal membuat program");
       }
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
@@ -123,3 +123,4 @@ export default function NewProgramPage() {
     </div>
   );
 }
+

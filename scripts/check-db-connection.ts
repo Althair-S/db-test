@@ -16,7 +16,10 @@ async function checkConnection() {
   } catch (error) {
     console.error("❌ Database connection failed!");
     if (error instanceof Error) {
-      console.error("Error:", error.message);
+      console.error("❌ Connection Error:", error.message);
+      console.error(error.stack);
+    } else {
+      console.error("❌ Unknown Error:", error);
     }
 
     // Non-blocking failure: warn but allow server to start

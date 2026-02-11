@@ -53,7 +53,7 @@ export default function EditProgramPage({ params }: RouteParams) {
       } else {
         setError("Program tidak ditemukan");
       }
-    } catch (err) {
+    } catch {
       setError("Gagal memuat program");
     } finally {
       setFetching(false);
@@ -82,7 +82,7 @@ export default function EditProgramPage({ params }: RouteParams) {
         const data = await response.json();
         setError(data.error || "Gagal mengupdate program");
       }
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);

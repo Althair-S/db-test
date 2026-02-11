@@ -65,7 +65,7 @@ export default function NewPurchaseRequestPage() {
         const data = await response.json();
         setPrograms(data);
       }
-    } catch (err) {
+    } catch {
       console.error("Error fetching programs:", err);
     } finally {
       setLoadingPrograms(false);
@@ -139,7 +139,7 @@ export default function NewPurchaseRequestPage() {
         const data = await response.json();
         setError(data.error || "Gagal membuat purchase request");
       }
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
@@ -421,3 +421,4 @@ export default function NewPurchaseRequestPage() {
     </div>
   );
 }
+
