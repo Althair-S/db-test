@@ -1,142 +1,134 @@
-# 🎉 Purchase Request Management System
+# � Sikola Mombine - Internal System
 
-## 🔐 Login Credentials
+Sistem manajemen internal untuk Yayasan Sikola Mombine, dirancang untuk mengelola proses operasional keuangan dan administrasi secara efisien dan transparan.
 
-User Login
+## 🌟 Fitur Utama
 
-| Role        | Email               | Password   |
-| ----------- | ------------------- | ---------- |
-| **Admin**   | admin@example.com   | admin123   |
-| **Finance** | finance@example.com | finance123 |
-| **User**    | user@example.com    | user123    |
+### 🔐 Otentikasi & Keamanan
 
-## 🚀 Cara Menggunakan
+- **Role-Based Access Control (RBAC)**: Akses dibedakan berdasarkan role:
+  - **Admin**: Akses penuh ke manajemen user dan data master.
+  - **Finance**: Review, approval, dan manajemen pembayaran.
+  - **User**: Membuat dan melacak permintaan (PR/CR).
+- **Secure Login**: Enkripsi password menggunakan bcrypt.
+- **Session Management**: Menggunakan NextAuth.js untuk sesi yang aman.
 
-### 1. Buka Browser
+### 📝 Purchase Requests (PR)
 
-Buka **http://localhost:3000** di browser Anda
+- **Pembuatan PR**: Form intuitif dengan multiple items dan kalkulasi otomatis.
+- **Workflow Persetujuan**: Status tracking (Pending → Approved/Rejected).
+- **Cetak PDF**: Template cetak resmi dengan tanda tangan digital.
+- **Budgeting**: Tracking budget vs realisasi (Costing To).
 
-### 2. Login
+### 💸 Cash Requests (CR)
 
-Gunakan salah satu credentials di atas untuk login
+- **Pengajuan Dana**: Form pengajuan dana tunai/cash advance.
+- **Vendor Management**: Integrasi dengan data supplier, fitur auto-add vendor baru.
+- **Itemized Details**: Rincian penggunaan dana dengan perhitungan pajak (PPN 11%).
+- **Cetak PDF**: Template cetak standar untuk dokumentasi keuangan.
 
-### 3. Test Workflow
+### 📊 Dashboard & Monitoring
 
-#### Sebagai USER (user@example.com)
+- **Overview**: Ringkasan status PR dan CR terkini.
+- **Filter & Search**: Pencarian mudah berdasarkan status, tanggal, atau nomor referensi.
+- **Statistik**: Visualisasi data pengajuan.
 
-1. Klik "Buat PR Baru" atau navigasi ke "My Purchase Requests"
-2. Isi form dengan:
-   - **Section 1**: Department, PR Number, Budgeted, Costing To
-   - **Section 2**: Tambah items (nama, quantity, unit, price)
-   - Total akan otomatis terhitung dalam Rupiah
-3. Klik "Simpan Purchase Request"
-4. Lihat PR Anda di list (status: Pending)
-5. Anda bisa **Edit** atau **Delete** PR yang masih pending
+### 🗂️ Master Data Management
 
-#### Sebagai FINANCE (finance@example.com)
+- **Vendors**: Database supplier/vendor dengan detail kontak dan pembayaran.
+- **Programs**: Manajemen program kerja dan proyek yayasan.
+- **Users**: Manajemen akun pengguna dan hak akses (Admin only).
 
-1. Navigasi ke "Review Requests"
-2. Lihat semua PR dari semua user
-3. Klik "View" pada PR yang pending
-4. Klik **"Approve"** untuk menyetujui, atau
-5. Klik **"Reject"** dan beri alasan penolakan
-6. PR yang sudah approved/rejected tidak bisa diedit oleh user
+## �️ Teknologi
 
-#### Sebagai ADMIN (admin@example.com)
+Sistem ini dibangun menggunakan teknologi web modern:
 
-1. Navigasi ke "Manage Users"
-2. Lihat semua user dengan statistik
-3. Klik "Create User" untuk membuat user baru
-4. Pilih role: admin, finance, atau user
-5. Edit atau hapus user yang ada
-6. Lihat semua PR di "All Requests"
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Database**: [MongoDB](https://www.mongodb.com/) dengan [Mongoose](https://mongoosejs.com/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Auth**: [NextAuth.js v5](https://authjs.dev/)
+- **PDF Generation**: [React-To-Print](https://www.npmjs.com/package/react-to-print)
 
-## 📋 Fitur
+## 🚀 Panduan Instalasi & Penggunaan
 
-### ✅ Authentication
+### Prasyarat
 
-- Login dengan email & password
-- Password terenkripsi dengan bcrypt
-- Session management dengan NextAuth
-- Auto redirect ke dashboard setelah login
+- Node.js (v18+)
+- MongoDB (Lokal atau Atlas)
 
-### ✅ Role-Based Access Control
-
-- **Admin**: Kelola user, lihat semua PR
-- **Finance**: Review & approve/reject PR
-- **User**: Buat, edit, delete PR sendiri
-
-### ✅ Purchase Request Management
-
-- Form 2 section sesuai requirement
-- Multiple items dengan auto-calculation
-- Format Rupiah otomatis
-- Status workflow: Pending → Approved/Rejected
-- Edit/delete hanya untuk PR pending
-- Filter by status (All, Pending, Approved, Rejected)
-
-### ✅ User Management (Admin)
-
-- CRUD operations lengkap
-- Role assignment
-- Statistics dashboard
-
-### ✅ UI/UX
-
-- Responsive design (mobile-friendly)
-- Modern gradient cards
-- Loading states
-- Error handling
-- Statistics cards
-
-## 🗄️ Database
-
-MongoDB berjalan di: `localhost:27017`
-Database name: `pr`
-
-Collections:
-
-- `users` - 3 users sudah dibuat
-- `purchaserequests` - akan terisi saat user membuat PR
-
-## 🔧 Commands
+### 1. Clone & Install
 
 ```bash
-# Development server (sudah berjalan)
-npm run dev
-
-# Build production
-npm run build
-
-# Start production
-npm start
-
-# Create users (sudah dijalankan)
-node create-users.js
+git clone <repository-url>
+cd db-test
+npm install
 ```
 
-- Pastikan MongoDB tetap berjalan
-- Jangan stop `npm run dev`
-- Password default untuk testing, ganti di production
-- Data tersimpan di MongoDB lokal
+### 2. Konfigurasi Environment
 
-## 🆘 Troubleshooting
+Buat file `.env.local` di root folder dan sesuaikan variabel berikut:
 
-**Login gagal?**
+```env
+DATABASE_URL="mongodb://127.0.0.1:27017/pr"
+NEXTAUTH_SECRET="your-secret-key-min-32-chars"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-- Pastikan MongoDB berjalan
-- Check credentials: admin@example.com / admin123
+### 3. Setup Database & User Awal
 
-**PR tidak muncul?**
+Jalankan script seeding untuk membuat user default:
 
-- Refresh halaman
-- Check role user (user hanya lihat PR sendiri)
+```bash
+npm run seed
+```
 
-**Error saat create PR?**
+### 4. Jalankan Aplikasi
 
-- Pastikan PR Number unique
-- Isi semua field yang required (\*)
+**Mode Development:**
+
+```bash
+npm run dev
+```
+
+Akses di `http://localhost:3000`
+
+**Mode Production:**
+
+```bash
+npm run build
+npm start
+```
+
+## 📂 Struktur Project
+
+```
+├── app/
+│   ├── api/            # Route Handlers (Backend API)
+│   ├── dashboard/      # Halaman utama aplikasi (Protected)
+│   │   ├── cash-requests/
+│   │   ├── purchase-requests/
+│   │   ├── vendors/
+│   │   ├── programs/
+│   │   └── users/
+│   ├── login/          # Halaman login
+│   └── layout.tsx      # Root layout
+├── lib/
+│   ├── db.ts           # Koneksi Database
+│   ├── models/         # Mongoose Models (Schema)
+│   └── auth.ts         # Konfigurasi NextAuth
+├── components/         # Reusable UI Components
+├── public/             # Static assets
+└── scripts/            # Utility scripts (seed, check-db)
+```
+
+## 🤝 Kontribusi & Workflow
+
+1.  **User** membuat PR/CR -> Status `Pending`.
+2.  **Finance** menerima notifikasi/melihat di dashboard.
+3.  **Finance** melakukan review -> `Approve` atau `Reject`.
+4.  **User** mencetak dokumen yang sudah disetujui untuk proses pencairan/pembelian.
 
 ---
 
-**Selamat mencoba! Aplikasi siap digunakan! 🚀**
+Built with ❤️ for Eet Elvian Setiawan
