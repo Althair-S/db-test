@@ -45,12 +45,21 @@ export default function PrintTemplate({ cr }: PrintTemplateProps) {
   return (
     <div className="hidden print:block font-sans text-black text-xs px-10 py-8">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-start border-b border-black pb-5 mb-6">
-        <div>
-          <h1 className="text-4xl font-extrabold uppercase tracking-wide">
-            Cash Request
-          </h1>
-          <p className="text-gray-600 mt-1">Payment Request Document</p>
+      <div className="flex justify-between items-center border-b border-black pb-5 mb-6">
+        <div className="flex items-center gap-4">
+          <img
+            src="/Logo - Yayasan Sikola Mombine.svg"
+            alt="Logo Yayasan Sikola Mombine"
+            className="h-24 w-auto"
+          />
+          <div>
+            <h1 className="text-4xl font-extrabold uppercase tracking-wide">
+              Cash Request
+            </h1>
+            <p className="text-gray-600 mt-1 font-semibold">
+              Payment Request Document
+            </p>
+          </div>
         </div>
 
         <div className="text-right">

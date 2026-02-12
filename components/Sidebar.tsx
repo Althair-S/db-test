@@ -123,10 +123,20 @@ export default function Sidebar() {
         `}
       >
         {/* Logo/Header */}
-        <div className="p-6 border-b border-indigo-700">
-          <h1 className="text-2xl font-bold">PR System</h1>
-          <p className="text-indigo-300 text-sm mt-1">
-            {session?.user?.role?.toUpperCase()}
+        <div className="p-6 border-b border-indigo-700 bg-indigo-900/50">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
+              <span className="font-bold text-lg">SM</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold leading-tight">
+                Sikola Mombine
+              </h1>
+              <p className="text-indigo-300 text-xs">Finance System</p>
+            </div>
+          </div>
+          <p className="text-indigo-400 text-[10px] mt-2 uppercase tracking-wider font-semibold">
+            {session?.user?.role}
           </p>
         </div>
 
@@ -140,15 +150,17 @@ export default function Sidebar() {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={`
-                  flex items-center space-x-3 px-4 py-3 rounded-lg transition-all
-                  ${
-                    isActive(item.href)
-                      ? "bg-indigo-700 text-white shadow-lg"
-                      : "text-indigo-200 hover:bg-indigo-700/50 hover:text-white"
-                  }
-                `}
+                    flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group
+                    ${
+                      isActive(item.href)
+                        ? "bg-indigo-700 text-white shadow-lg ring-1 ring-white/20"
+                        : "text-indigo-200 hover:bg-indigo-700/50 hover:text-white"
+                    }
+                  `}
               >
-                <Icon className="h-5 w-5" />
+                <Icon
+                  className={`h-5 w-5 transition-transform duration-200 ${isActive(item.href) ? "scale-110" : "group-hover:scale-110"}`}
+                />
                 <span className="font-medium">{item.name}</span>
               </Link>
             );
