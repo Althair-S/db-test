@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import PrintTemplate from "./PrintTemplate";
+import { exportToExcel } from "@/lib/exportToExcel";
 
 interface PRItem {
   item: string;
@@ -179,6 +180,62 @@ export default function PurchaseRequestDetailPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleExportExcel = () => {
+    if (!pr) return;
+
+    const currentDate = new Date().toISOString().split("T")[0];
+    const filename = `PR-${pr.prNumber}-${currentDate}.xlsx`;
+
+    // Prepare metadata
+    const metadata = {
+      "PR Number": pr.prNumber,
+      "Activity Name": pr.activityName,
+      Department: pr.department,
+      Program: `${pr.programName} (${pr.programCode})`,
+      Budgeted: pr.budgeted ? "Yes" : "No",
+      "Costing To": pr.costingTo,
+      "Created By": pr.createdByName,
+      "Created At": new Date(pr.createdAt).toLocaleString("id-ID"),
+      Status: pr.status.toUpperCase(),
+    };
+
+    // Prepare columns
+    const columns = [
+      { header: "Item", key: "item", width: 30 },
+      { header: "Quantity", key: "quantity", width: 10 },
+      { header: "Unit", key: "unit", width: 10 },
+      { header: "Price", key: "price", width: 15 },
+      { header: "Total", key: "total", width: 15 },
+    ];
+
+    // Prepare data
+    const data = pr.items.map((item) => ({
+      item: item.item,
+      quantity: item.quantity,
+      unit: item.unit,
+      price: formatRupiah(item.price),
+      total: formatRupiah(item.totalPrice),
+    }));
+
+    // Prepare total row
+    const totalRow = {
+      item: "",
+      quantity: "",
+      unit: "",
+      price: "Grand Total:",
+      total: formatRupiah(getTotalAmount()),
+    };
+
+    exportToExcel({
+      filename,
+      sheetName: "Purchase Request",
+      metadata,
+      columns,
+      data,
+      totalRow,
+    });
   };
 
   const formatRupiah = (value: number) => {
@@ -478,27 +535,48 @@ export default function PurchaseRequestDetailPage() {
 
       {/* Actions */}
       <div className="flex justify-end space-x-4 print:hidden">
-        {/* Print button for approved PRs */}
+        {/* Print and Export buttons for approved PRs */}
         {pr.status === "approved" && (
-          <button
-            onClick={handlePrint}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <>
+            <button
+              onClick={handleExportExcel}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition flex items-center gap-2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-              />
-            </svg>
-            Print to PDF
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Export to Excel
+            </button>
+            <button
+              onClick={handlePrint}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                />
+              </svg>
+              Print to PDF
+            </button>
+          </>
         )}
 
         {canDelete && (

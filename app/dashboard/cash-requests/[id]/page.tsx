@@ -7,6 +7,7 @@ import { ICashRequest } from "@/types/cash-request";
 import PrintTemplate from "./PrintTemplate";
 import { useReactToPrint } from "react-to-print";
 import { PrinterIcon } from "@heroicons/react/24/outline";
+import { exportToExcel } from "@/lib/exportToExcel";
 
 export default function CashRequestDetailPage() {
   const router = useRouter();
@@ -46,6 +47,101 @@ export default function CashRequestDetailPage() {
     contentRef: printRef,
     documentTitle: `CR-${cr?._id}`,
   });
+
+  const handleExportExcel = () => {
+    if (!cr) return;
+
+    const currentDate = new Date().toISOString().split("T")[0];
+    const filename = `CR-${cr._id}-${currentDate}.xlsx`;
+
+    // Calculate items
+    const items =
+      cr.items && cr.items.length > 0
+        ? cr.items
+        : [
+            {
+              description: cr.description || "-",
+              quantity: 1,
+              price: cr.amount || 0,
+              total: cr.amount || 0,
+            },
+          ];
+
+    const subtotal = items.reduce(
+      (sum: number, i: { total: number }) => sum + i.total,
+      0,
+    );
+    const total =
+      cr.totalAmount ||
+      items.reduce((sum: number, i: { total: number }) => sum + i.total, 0);
+
+    // Prepare metadata
+    const metadata = {
+      "Program Name": cr.programName || "-",
+      "Program Code": cr.programCode || "-",
+      "Activity Name": cr.activityName || "-",
+      "Vendor Name": cr.vendorName,
+      "Bank Name": cr.bankName,
+      "Account Number": cr.accountNumber,
+      "Created By": cr.createdByName,
+      "Created At": new Date(cr.createdAt).toLocaleString("id-ID"),
+      Status: cr.status.toUpperCase(),
+    };
+
+    // Prepare columns
+    const columns = [
+      { header: "Item", key: "description", width: 35 },
+      { header: "Qty", key: "quantity", width: 8 },
+      { header: "Price", key: "price", width: 15 },
+      { header: "Total", key: "total", width: 15 },
+    ];
+
+    // Prepare data
+    const data = items.map((item) => ({
+      description: item.description,
+      quantity: item.quantity,
+      price: formatCurrency(item.price),
+      total: formatCurrency(item.total),
+    }));
+
+    // Prepare total rows
+    const totalRows = [];
+    if (cr.useTax) {
+      totalRows.push({
+        description: "",
+        quantity: "",
+        price: "Subtotal:",
+        total: formatCurrency(subtotal),
+      });
+      totalRows.push({
+        description: "",
+        quantity: "",
+        price: `Tax Deduction (${cr.taxPercentage || 0}%):`,
+        total: `- ${formatCurrency(cr.taxAmount || 0)}`,
+      });
+    }
+    totalRows.push({
+      description: "",
+      quantity: "",
+      price: "Grand Total (Net):",
+      total: formatCurrency(total),
+    });
+
+    // For multiple total rows, combine them into the data array
+    const dataWithTotals = [
+      ...data,
+      { description: "", quantity: "", price: "", total: "" },
+      ...totalRows,
+    ];
+
+    exportToExcel({
+      filename,
+      sheetName: "Cash Request",
+      metadata,
+      columns,
+      data: dataWithTotals,
+    });
+  };
 
   const handleApprove = async () => {
     if (!confirm("Are you sure you want to approve this cash request?")) {
@@ -188,6 +284,25 @@ export default function CashRequestDetailPage() {
           >
             <PrinterIcon className="w-5 h-5" />
             <span>Print PDF</span>
+          </button>
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <span>Export to Excel</span>
           </button>
           <button
             onClick={() => router.back()}
