@@ -3,6 +3,10 @@ import { ICashRequest } from "@/types/cash-request";
 
 interface PrintTemplateProps {
   cr: ICashRequest;
+  signatures: {
+    reviewedBy: { name: string; position: string };
+    approvedBy: { name: string; position: string };
+  };
 }
 
 /* ================= HELPER ================= */
@@ -24,7 +28,7 @@ const MoneyCell = ({
   </div>
 );
 
-export default function PrintTemplate({ cr }: PrintTemplateProps) {
+export default function PrintTemplate({ cr, signatures }: PrintTemplateProps) {
   // Normalize items for legacy records
   const items =
     cr.items && cr.items.length > 0
@@ -187,8 +191,16 @@ export default function PrintTemplate({ cr }: PrintTemplateProps) {
       <div className="grid grid-cols-3 gap-10 mt-12 text-center">
         {[
           ["Requested By", cr.createdByName, "User"],
-          ["Reviewed By", cr.approvedByName, "Finance Officer"],
-          ["Approved By", "Nur Safitri Lasibani", "Executive Director"],
+          [
+            "Reviewed By",
+            signatures.reviewedBy.name,
+            signatures.reviewedBy.position,
+          ],
+          [
+            "Approved By",
+            signatures.approvedBy.name,
+            signatures.approvedBy.position,
+          ],
         ].map(([title, name, role]) => (
           <div key={title}>
             <p className="mb-14">{title}</p>

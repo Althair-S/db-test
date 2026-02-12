@@ -21,6 +21,10 @@ interface PrintTemplateProps {
     items: PRItem[];
   };
   getTotalAmount: () => number;
+  signatures: {
+    reviewedBy: { name: string; position: string };
+    approvedBy: { name: string; position: string };
+  };
 }
 
 /* ================= HELPER ================= */
@@ -45,6 +49,7 @@ const MoneyCell = ({
 export default function PrintTemplate({
   pr,
   getTotalAmount,
+  signatures,
 }: PrintTemplateProps) {
   return (
     <div className="hidden print:block font-sans text-black text-xs px-10 py-8">
@@ -177,8 +182,16 @@ export default function PrintTemplate({
       <div className="grid grid-cols-3 gap-10 mt-8 text-center">
         {[
           ["Requested By", pr.createdByName, "User"],
-          ["Reviewed By", "Finance", "Finance Officer"],
-          ["Approved By", "Nur Safitri Lasibani", "Executive Director"],
+          [
+            "Reviewed By",
+            signatures.reviewedBy.name,
+            signatures.reviewedBy.position,
+          ],
+          [
+            "Approved By",
+            signatures.approvedBy.name,
+            signatures.approvedBy.position,
+          ],
         ].map(([title, name, role]) => (
           <div key={title}>
             <p className="mb-14">{title}</p>

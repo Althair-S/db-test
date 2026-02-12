@@ -62,6 +62,16 @@ export default function PurchaseRequestDetailPage() {
   const [newComment, setNewComment] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
 
+  // Signature configuration state
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [signatures, setSignatures] = useState({
+    reviewedBy: { name: "Finance", position: "Finance Officer" },
+    approvedBy: {
+      name: "Nur Safitri Lasibani",
+      position: "Executive Director",
+    },
+  });
+
   useEffect(() => {
     if (id) {
       fetchPR();
@@ -179,7 +189,14 @@ export default function PurchaseRequestDetailPage() {
   };
 
   const handlePrint = () => {
-    window.print();
+    setShowSignatureModal(true);
+  };
+
+  const handleConfirmPrint = () => {
+    setShowSignatureModal(false);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
   const handleExportExcel = () => {
@@ -289,7 +306,11 @@ export default function PurchaseRequestDetailPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Print Template - Separate Component */}
-      <PrintTemplate pr={pr} getTotalAmount={getTotalAmount} />
+      <PrintTemplate
+        pr={pr}
+        getTotalAmount={getTotalAmount}
+        signatures={signatures}
+      />
 
       <div className="flex justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold text-gray-800">
@@ -614,6 +635,132 @@ export default function PurchaseRequestDetailPage() {
           </>
         )}
       </div>
+
+      {/* Signature Configuration Modal */}
+      {showSignatureModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">
+              Konfigurasi Tanda Tangan
+            </h3>
+
+            <div className="space-y-6">
+              {/* Reviewed By */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-700 mb-3">
+                  Reviewed By
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama
+                    </label>
+                    <input
+                      type="text"
+                      value={signatures.reviewedBy.name}
+                      onChange={(e) =>
+                        setSignatures({
+                          ...signatures,
+                          reviewedBy: {
+                            ...signatures.reviewedBy,
+                            name: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="Masukkan nama"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Posisi / Jabatan
+                    </label>
+                    <input
+                      type="text"
+                      value={signatures.reviewedBy.position}
+                      onChange={(e) =>
+                        setSignatures({
+                          ...signatures,
+                          reviewedBy: {
+                            ...signatures.reviewedBy,
+                            position: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="Masukkan posisi/jabatan"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Approved By */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-700 mb-3">
+                  Approved By
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama
+                    </label>
+                    <input
+                      type="text"
+                      value={signatures.approvedBy.name}
+                      onChange={(e) =>
+                        setSignatures({
+                          ...signatures,
+                          approvedBy: {
+                            ...signatures.approvedBy,
+                            name: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="Masukkan nama"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Posisi / Jabatan
+                    </label>
+                    <input
+                      type="text"
+                      value={signatures.approvedBy.position}
+                      onChange={(e) =>
+                        setSignatures({
+                          ...signatures,
+                          approvedBy: {
+                            ...signatures.approvedBy,
+                            position: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="Masukkan posisi/jabatan"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                onClick={() => setShowSignatureModal(false)}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmPrint}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Reject Modal */}
       {showRejectModal && (
